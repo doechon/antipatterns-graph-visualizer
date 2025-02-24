@@ -19,13 +19,13 @@ import { ColorfulMarkerDefinitions } from "./components/Edges/Marker";
 import { kNodeTypes } from "./components/Nodes";
 import { ReactflowInstance } from "./components/ReactflowInstance";
 import defaultWorkflow from "./data/data.json";
-import {convertData2Workflow, workflow2reactflow} from "./data/convert";
+import { convertData2Workflow, workflow2reactflow } from "./data/convert";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "./layout/node";
 import { useAutoLayout } from "./layout/useAutoLayout";
 
 const EditWorkFlow = () => {
-  const [nodes, _setNodes, onNodesChange] = useNodesState([]);
-  const [edges, _setEdges, onEdgesChange] = useEdgesState([]);
+  const [ nodes, _setNodes, onNodesChange ] = useNodesState([]);
+  const [ edges, _setEdges, onEdgesChange ] = useEdgesState([]);
 
   const { layout, layouting } = useAutoLayout();
 
@@ -34,16 +34,16 @@ const EditWorkFlow = () => {
       workflow: string;
     }
   ) => {
-    if (layouting) {
+    if ( layouting ) {
       return;
     }
     const input = props.workflow;
     const data = jsonDecode(input);
-    if (!data) {
+    if ( !data ) {
       alert("Invalid workflow JSON data");
       return;
     }
-    const workflow = workflow2reactflow(data);
+    const workflow = workflow2reactflow({ ...data, bottleneckStatistics: props.bottleneckStatistics });
     await layout({ ...workflow, ...props });
   };
 
@@ -54,34 +54,34 @@ const EditWorkFlow = () => {
 
   return (
     <div
-      style={{
+      style={ {
         width: "100vw",
         height: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-      }}
+      } }
     >
-      <ColorfulMarkerDefinitions />
+      <ColorfulMarkerDefinitions/>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={kNodeTypes}
-        edgeTypes={kEdgeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        nodes={ nodes }
+        edges={ edges }
+        nodeTypes={ kNodeTypes }
+        edgeTypes={ kEdgeTypes }
+        onNodesChange={ onNodesChange }
+        onEdgesChange={ onEdgesChange }
       >
-        <Background id="0" color="#ccc" variant={BackgroundVariant.Dots} />
-        <ReactflowInstance />
-        <Controls />
+        <Background id="0" color="#ccc" variant={ BackgroundVariant.Dots }/>
+        <ReactflowInstance/>
+        <Controls/>
         <MiniMap
           pannable
           zoomable
           maskColor="transparent"
           maskStrokeColor="black"
-          maskStrokeWidth={10}
+          maskStrokeWidth={ 10 }
         />
-        <ControlPanel layoutReactflow={layoutReactflow} />
+        <ControlPanel layoutReactflow={ layoutReactflow }/>
       </ReactFlow>
     </div>
   );
@@ -90,7 +90,7 @@ const EditWorkFlow = () => {
 export const WorkFlow = () => {
   return (
     <ReactFlowProvider>
-      <EditWorkFlow />
+      <EditWorkFlow/>
     </ReactFlowProvider>
   );
 };

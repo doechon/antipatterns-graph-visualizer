@@ -1,29 +1,33 @@
 import { lastOf } from "@/utils/base";
-import {Data, Reactflow, Workflow} from "./types";
-import { useMemo } from "react";
+import { Data, Reactflow, Workflow } from "./types";
 
-
-export const convertData2Workflow = (data:Data): Workflow => {
+export const convertData2Workflow = ( data: Data ): Workflow => {
   const edgesCount: Record<string, number> = {};
   const preparedEdges: Workflow['edges'] = []
-  for (const edge of data["dependencyGraph"]['edges']) {
-    if (!edgesCount[edge]) {
+  for ( const edge of data["dependencyGraph"]['edges'] ) {
+    if ( !edgesCount[edge] ) {
       edgesCount[edge] = 0
     } else {
       edgesCount[edge]++
     }
     const count = edgesCount[edge]
-    preparedEdges.push({id: `${edge.source}#${edge.target}#${count}`, source: edge.source, target: edge.target, sourceHandle: `${edge.source}#source#${count}`, targetHandle: `${edge.target}#target#0`})
+    preparedEdges.push({
+      id: `${ edge.source }#${ edge.target }#${ count }`,
+      source: edge.source,
+      target: edge.target,
+      sourceHandle: `${ edge.source }#source#${ count }`,
+      targetHandle: `${ edge.target }#target#0`
+    })
   }
 
   return {
-    nodes: data["dependencyGraph"]['nodes'].map(node => ({id: node.id, type: 'base'})),
+    nodes: data["dependencyGraph"]['nodes'].map(node => ({ id: node.id, type: 'base' })),
     edges: preparedEdges,
     analysis: data["architectureAnalysis"]
   }
 }
 
-export const workflow2reactflow = (workflow: Workflow): Reactflow => {
+export const workflow2reactflow = ( workflow: Workflow & { bottleneckStatistics?: boolean } ): Reactflow => {
   const { nodes = [], edges = [], analysis } = workflow ?? {};
   const edgesCount: Record<string, number> = {};
   const edgesIndex: Record<string, { source: number; target: number }> = {};
@@ -35,10 +39,10 @@ export const workflow2reactflow = (workflow: Workflow): Reactflow => {
     }
   > = {};
 
-  for (const edge of edges) {
+  for ( const edge of edges ) {
     const { source, target, sourceHandle, targetHandle } = edge;
-    for (const i of [sourceHandle,targetHandle, `source-${source}`, `target-${target}`]) {
-      if (!edgesCount[i]) {
+    for ( const i of [ sourceHandle, targetHandle, `source-${ source }`, `target-${ target }` ] ) {
+      if ( !edgesCount[i] ) {
         edgesCount[i] = 1;
       } else {
         edgesCount[i] += 1;
@@ -50,20 +54,20 @@ export const workflow2reactflow = (workflow: Workflow): Reactflow => {
       target: edgesCount[targetHandle] - 1,
     };
 
-    if (!nodeHandles[source]) {
+    if ( !nodeHandles[source] ) {
       nodeHandles[source] = { sourceHandles: {}, targetHandles: {} };
     }
-    if (!nodeHandles[target]) {
+    if ( !nodeHandles[target] ) {
       nodeHandles[target] = { sourceHandles: {}, targetHandles: {} };
     }
 
-    if (!nodeHandles[source].sourceHandles[sourceHandle]) {
+    if ( !nodeHandles[source].sourceHandles[sourceHandle] ) {
       nodeHandles[source].sourceHandles[sourceHandle] = 1;
     } else {
       nodeHandles[source].sourceHandles[sourceHandle] += 1;
     }
 
-    if (!nodeHandles[target].targetHandles[targetHandle]) {
+    if ( !nodeHandles[target].targetHandles[targetHandle] ) {
       nodeHandles[target].targetHandles[targetHandle] = 1;
     } else {
       nodeHandles[target].targetHandles[targetHandle] += 1;
@@ -71,29 +75,29 @@ export const workflow2reactflow = (workflow: Workflow): Reactflow => {
   }
 
   return {
-    nodes: nodes.map((node) => ({
+    nodes: nodes.map(( node ) => ({
       ...node,
       data: {
         ...node,
         sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
         targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
-        bottleneckPercent: node.id in analysis.bottlenecks ? analysis.bottlenecks[node.id] : void 0,
-        tooltip: { label: node.id in analysis.bottlenecks ? `BottleneckPercent: ${analysis.bottlenecks[node.id]}` : void 0}
+        bottleneckPercent: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? analysis.bottlenecks[node.id] : void 0,
+        tooltip: { label: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? `BottleneckPercent: ${ analysis.bottlenecks[node.id] }` : void 0 }
       },
       position: { x: 0, y: 0 },
     })),
-    edges: edges.map((edge) => ({
+    edges: edges.map(( edge ) => ({
       ...edge,
       data: {
         sourcePort: {
-          edges: edgesCount[`source-${edge.source}`],
+          edges: edgesCount[`source-${ edge.source }`],
           portIndex: parseInt(lastOf(edge.sourceHandle.split("#"))!, 10),
           portCount: Object.keys(nodeHandles[edge.source].sourceHandles).length,
           edgeIndex: edgesIndex[edge.id].source,
           edgeCount: edgesCount[edge.sourceHandle],
         },
         targetPort: {
-          edges: edgesCount[`target-${edge.target}`],
+          edges: edgesCount[`target-${ edge.target }`],
           portIndex: parseInt(lastOf(edge.targetHandle.split("#"))!, 10),
           portCount: Object.keys(nodeHandles[edge.target].targetHandles).length,
           edgeIndex: edgesIndex[edge.id].target,

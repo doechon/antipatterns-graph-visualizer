@@ -2,7 +2,7 @@ import { button, Leva, useControls } from "leva";
 import defaultWorkflow from "../data/data.json";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "../layout/node";
 import { jsonEncode } from "@/utils/base";
-import {convertData2Workflow} from "@/data/convert.ts";
+import { convertData2Workflow } from "@/data/convert.ts";
 
 export const kReactflowLayoutConfig: {
   setState: any;
@@ -19,7 +19,7 @@ const algorithms = [
   "elk-layered",
   "dagre-tree",
 ].reduce(
-  (pre, algorithm) => {
+  ( pre, algorithm ) => {
     pre[algorithm] = algorithm;
     return pre;
   },
@@ -32,7 +32,7 @@ const directions = Object.entries({
   vertical: "vertical",
   horizontal: "horizontal",
 }).reduce(
-  (pre, [key, value]) => {
+  ( pre, [ key, value ] ) => {
     pre[key] = value;
     return pre;
   },
@@ -49,21 +49,34 @@ const reverseSourceHandles = Object.entries({
   asc: false,
   desc: true,
 }).reduce(
-  (pre, [key, value]) => {
+  ( pre, [ key, value ] ) => {
     pre[key] = value;
     return pre;
   },
   {
     [reverseSourceHandlesKeyMap[
       kDefaultLayoutConfig.reverseSourceHandles.toString()
-    ]]: kDefaultLayoutConfig.reverseSourceHandles,
+      ]]: kDefaultLayoutConfig.reverseSourceHandles,
   } as any
 );
 
-export const ControlPanel = (props: { layoutReactflow: any }) => {
+const BottleneckStatistics = Object.entries({
+  true: true,
+  false: false
+}).reduce(
+  ( pre, [ key, value ] ) => {
+    pre[key] = value;
+    return pre;
+  },
+  {
+    [kDefaultLayoutConfig.bottleneckStatistics]: kDefaultLayoutConfig.bottleneckStatistics,
+  } as any
+)
+
+export const ControlPanel = ( props: { layoutReactflow: any } ) => {
   const { layoutReactflow } = props;
 
-  const [state, setState] = useControls(() => {
+  const [ state, setState ] = useControls(() => {
     return {
       workflow: {
         order: 1,
@@ -92,16 +105,22 @@ export const ControlPanel = (props: { layoutReactflow: any }) => {
         label: "Order",
         options: reverseSourceHandles,
       },
-      layout: {
+      bottleneckStatistics: {
         order: 6,
+        label: 'BottleNeck Statistics',
+        options: BottleneckStatistics
+      },
+      layout: {
+        order: 7,
         label: "Layout",
-        ...button((get) => {
+        ...button(( get ) => {
           layoutReactflow({
             workflow: get("workflow"),
             algorithm: get("algorithm"),
             direction: get("direction"),
             spacing: get("spacing"),
             reverseSourceHandles: get("reverseSourceHandles"),
+            bottleneckStatistics: get("bottleneckStatistics")
           });
         }),
       },
@@ -111,5 +130,5 @@ export const ControlPanel = (props: { layoutReactflow: any }) => {
   kReactflowLayoutConfig.state = state as any;
   kReactflowLayoutConfig.setState = setState;
 
-  return <Leva hideCopyButton titleBar={{ filter: false }} />;
+  return <Leva hideCopyButton titleBar={ { filter: false } }/>;
 };

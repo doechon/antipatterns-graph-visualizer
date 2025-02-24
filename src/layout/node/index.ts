@@ -16,6 +16,7 @@ export interface LayoutSpacing {
 
 export type ReactflowLayoutConfig = {
   algorithm: LayoutAlgorithms;
+  bottleneckStatistics: boolean;
   direction: LayoutDirection;
   spacing: LayoutSpacing;
   /**
@@ -51,6 +52,7 @@ export const kDefaultLayoutConfig: ReactflowLayoutConfig = {
   visibility: "visible",
   spacing: { x: 120, y: 120 },
   reverseSourceHandles: false,
+  bottleneckStatistics: false
 };
 
 export type LayoutAlgorithms =
