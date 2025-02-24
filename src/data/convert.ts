@@ -1,11 +1,12 @@
 import { lastOf } from "@/utils/base";
 import {Data, Reactflow, Workflow} from "./types";
+import { useMemo } from "react";
 
 
-export const convertData2Workflow = (data:Data ): Workflow => {
+export const convertData2Workflow = (data:Data): Workflow => {
   const edgesCount: Record<string, number> = {};
-  let preparedEdges:Workflow['edges'] = []
-  for (const edge of data.edges) {
+  const preparedEdges: Workflow['edges'] = []
+  for (const edge of data["dependencyGraph"]['edges']) {
     if (!edgesCount[edge]) {
       edgesCount[edge] = 0
     } else {
@@ -16,13 +17,14 @@ export const convertData2Workflow = (data:Data ): Workflow => {
   }
 
   return {
-    nodes: data.nodes.map(nodeName => ({id: nodeName, type: 'base'})),
-    edges: preparedEdges
+    nodes: data["dependencyGraph"]['nodes'].map(node => ({id: node.id, type: 'base'})),
+    edges: preparedEdges,
+    analysis: data["architectureAnalysis"]
   }
 }
 
 export const workflow2reactflow = (workflow: Workflow): Reactflow => {
-  const { nodes = [], edges = [] } = workflow ?? {};
+  const { nodes = [], edges = [], analysis } = workflow ?? {};
   const edgesCount: Record<string, number> = {};
   const edgesIndex: Record<string, { source: number; target: number }> = {};
   const nodeHandles: Record<
@@ -75,6 +77,8 @@ export const workflow2reactflow = (workflow: Workflow): Reactflow => {
         ...node,
         sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
         targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
+        bottleneckPercent: node.id in analysis.bottlenecks ? analysis.bottlenecks[node.id] : void 0,
+        tooltip: { label: node.id in analysis.bottlenecks ? `BottleneckPercent: ${analysis.bottlenecks[node.id]}` : void 0}
       },
       position: { x: 0, y: 0 },
     })),

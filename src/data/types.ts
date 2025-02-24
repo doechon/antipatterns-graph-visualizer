@@ -1,13 +1,27 @@
-import { Edge, Node, XYPosition } from "reactflow";
+import {Edge, Node, NodeToolbarProps, XYPosition} from "reactflow";
 
 import { ControlPoint } from "../layout/edge/point";
 
+
+interface Analysis {
+  bottlenecks: {
+    [key: string]: number
+  },
+  cycles: string[][];
+  godClasses:{
+    [key: string]: number
+  }
+}
 export interface Data {
-  nodes: string[];
-  edges: {
-    source: string;
-    target: string;
-  }[]
+  architectureAnalysis: Analysis,
+  dependencyGraph: {
+    nodes: { id: string, type: string }[];
+    edges: {
+      source: string;
+      type: string;
+      target: string;
+    }[]
+  }
 }
 
 interface WorkflowNode {
@@ -26,6 +40,7 @@ interface WorkflowEdge {
 export interface Workflow {
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
+  analysis: Analysis;
 }
 
 export type ReactflowNode<
@@ -47,6 +62,14 @@ export type ReactflowNodeData = WorkflowNode & {
    * Format of Port ID: `nodeID#target#idx`
    */
   targetHandles: string[];
+  tooltip?: {
+    label: string;
+    position?: NodeToolbarProps["position"];
+  };
+  /**
+   * Bottleneck percent
+   */
+  bottleneckPercent?: number
 };
 
 export interface ReactflowEdgePort {

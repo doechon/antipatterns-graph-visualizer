@@ -18,7 +18,7 @@ import { kEdgeTypes } from "./components/Edges";
 import { ColorfulMarkerDefinitions } from "./components/Edges/Marker";
 import { kNodeTypes } from "./components/Nodes";
 import { ReactflowInstance } from "./components/ReactflowInstance";
-import defaultWorkflow from "./data/data1.json";
+import defaultWorkflow from "./data/data.json";
 import {convertData2Workflow, workflow2reactflow} from "./data/convert";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "./layout/node";
 import { useAutoLayout } from "./layout/useAutoLayout";
@@ -49,7 +49,6 @@ const EditWorkFlow = () => {
 
   useEffect(() => {
     const { nodes, edges } = workflow2reactflow(convertData2Workflow(defaultWorkflow as any));
-    console.log({ nodes, edges });
     layout({ nodes, edges, ...kDefaultLayoutConfig });
   }, []);
 
