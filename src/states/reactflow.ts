@@ -1,5 +1,5 @@
-import type { useStoreApi } from "reactflow";
-import { ReactFlowInstance } from "reactflow";
+import type { useStoreApi } from "@xyflow/react";
+import { ReactFlowInstance } from "@xyflow/react";
 
 import { ReactflowEdgeWithData, ReactflowNodeWithData } from "../data/types";
 
@@ -14,11 +14,11 @@ export const getReactflowData = () => {
   return {
     nodes,
     edges,
-    nodesMap: nodes.reduce((pre, v) => {
+    nodesMap: nodes.reduce(( pre, v ) => {
       pre[v.id] = v;
       return pre;
     }, {} as Record<string, ReactflowNodeWithData>),
-    edgesMap: edges.reduce((pre, v) => {
+    edgesMap: edges.reduce(( pre, v ) => {
       pre[v.id] = v;
       return pre;
     }, {} as Record<string, ReactflowEdgeWithData>),

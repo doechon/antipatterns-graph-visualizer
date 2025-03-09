@@ -1,7 +1,7 @@
 // Based on: https://github.com/flanksource/flanksource-ui/blob/75b35591d3bbc7d446fa326d0ca7536790f38d88/src/ui/Graphs/Layouts/algorithms/d3-hierarchy.ts
 
-import { stratify, tree, type HierarchyPointNode } from "d3-hierarchy";
-import { getIncomers, type Node } from "reactflow";
+import { type HierarchyPointNode, stratify, tree } from "d3-hierarchy";
+import { getIncomers, type Node } from "@xyflow/react";
 
 import { ReactflowNodeWithData } from "@/data/types";
 import { LayoutAlgorithm } from "..";
@@ -21,14 +21,14 @@ const rootNode: NodeWithPosition = {
   data: {} as any,
 };
 
-export const layoutD3Hierarchy: LayoutAlgorithm = async (props) => {
+export const layoutD3Hierarchy: LayoutAlgorithm = async ( props ) => {
   const { nodes, edges, direction, visibility, spacing } = props;
   const isHorizontal = direction === "horizontal";
 
   const initialNodes = [] as NodeWithPosition[];
   let maxNodeWidth = 0;
   let maxNodeHeight = 0;
-  for (const node of nodes) {
+  for ( const node of nodes ) {
     const { widthWithDefault, heightWithDefault } = getNodeSize(node);
     initialNodes.push({
       ...node,
@@ -42,14 +42,14 @@ export const layoutD3Hierarchy: LayoutAlgorithm = async (props) => {
 
   // Since d3-hierarchy does not support horizontal layout,
   // we swap the width and height of nodes and interchange x and y mappings based on the layout direction.
-  const nodeSize: [number, number] = isHorizontal
-    ? [maxNodeHeight + spacing.y, maxNodeWidth + spacing.x]
-    : [maxNodeWidth + spacing.x, maxNodeHeight + spacing.y];
+  const nodeSize: [ number, number ] = isHorizontal
+    ? [ maxNodeHeight + spacing.y, maxNodeWidth + spacing.x ]
+    : [ maxNodeWidth + spacing.x, maxNodeHeight + spacing.y ];
 
   layout.nodeSize(nodeSize);
 
-  const getParentId = (node: Node) => {
-    if (node.id === rootNode.id) {
+  const getParentId = ( node: Node ) => {
+    if ( node.id === rootNode.id ) {
       return undefined;
     }
     // Node without input is the root node of sub-workflow, and we should connect it to the rootNode
@@ -58,17 +58,17 @@ export const layoutD3Hierarchy: LayoutAlgorithm = async (props) => {
   };
 
   const hierarchy = stratify<NodeWithPosition>()
-    .id((d) => d.id)
-    .parentId(getParentId)([rootNode, ...initialNodes]);
+    .id(( d ) => d.id)
+    .parentId(getParentId)([ rootNode, ...initialNodes ]);
 
   const root = layout(hierarchy);
   const layoutNodes = new Map<string, HierarchyPointNode<NodeWithPosition>>();
-  for (const node of root) {
+  for ( const node of root ) {
     layoutNodes.set(node.id!, node);
   }
 
   return {
-    nodes: nodes.map((node) => {
+    nodes: nodes.map(( node ) => {
       const { x, y } = layoutNodes.get(node.id)!;
       // Interchange x and y mappings based on the layout direction.
       const position = isHorizontal ? { x: y, y: x } : { x, y };
@@ -77,7 +77,7 @@ export const layoutD3Hierarchy: LayoutAlgorithm = async (props) => {
         position,
         direction,
         visibility,
-        fixPosition: ({ x, y, width, height }) => {
+        fixPosition: ( { x, y, width, height } ) => {
           // This algorithm uses the center coordinate of the node as the reference point, 
           // which needs adjustment for ReactFlow's topLeft coordinate system.
           return {
@@ -87,6 +87,6 @@ export const layoutD3Hierarchy: LayoutAlgorithm = async (props) => {
         },
       });
     }),
-    edges: edges.map((edge) => getEdgeLayouted({ edge, visibility })),
+    edges: edges.map(( edge ) => getEdgeLayouted({ edge, visibility })),
   };
 };

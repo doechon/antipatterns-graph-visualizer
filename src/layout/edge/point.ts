@@ -1,4 +1,4 @@
-import { Position } from "reactflow";
+import { Position } from "@xyflow/react";
 
 import { uuid } from "@/utils/uuid";
 
@@ -38,17 +38,17 @@ export interface GetVerticesParams {
 /**
  * Find the potential midpoint and intersection
  */
-export const getCenterPoints = ({
-  source,
-  target,
-  sourceOffset,
-  targetOffset,
-}: GetVerticesParams): ControlPoint[] => {
-  if (sourceOffset.x === targetOffset.x || sourceOffset.y === targetOffset.y) {
+export const getCenterPoints = ( {
+                                   source,
+                                   target,
+                                   sourceOffset,
+                                   targetOffset,
+                                 }: GetVerticesParams ): ControlPoint[] => {
+  if ( sourceOffset.x === targetOffset.x || sourceOffset.y === targetOffset.y ) {
     // Cannot determine the rectangle
     return [];
   }
-  const vertices = [...getRectVertices(source), ...getRectVertices(target)];
+  const vertices = [ ...getRectVertices(source), ...getRectVertices(target) ];
   const outerSides = getSidesFromPoints(vertices);
   const { left, right, top, bottom } = getSidesFromPoints([
     sourceOffset,
@@ -66,12 +66,12 @@ export const getCenterPoints = ({
     { id: uuid(), x: centerX, y: outerSides.bottom }, // outerBottom
     { id: uuid(), x: outerSides.left, y: centerY }, // outerLeft
   ];
-  return points.filter((p) => {
+  return points.filter(( p ) => {
     return !isPointInRect(p, source) && !isPointInRect(p, target);
   });
 };
 
-export const getExpandedRect = (rect: NodeRect, offset: number): NodeRect => {
+export const getExpandedRect = ( rect: NodeRect, offset: number ): NodeRect => {
   return {
     x: rect.x - offset,
     y: rect.y - offset,
@@ -80,14 +80,14 @@ export const getExpandedRect = (rect: NodeRect, offset: number): NodeRect => {
   };
 };
 
-export const isRectOverLapping = (rect1: NodeRect, rect2: NodeRect) => {
+export const isRectOverLapping = ( rect1: NodeRect, rect2: NodeRect ) => {
   return (
     Math.abs(rect1.x - rect2.x) < (rect1.width + rect2.width) / 2 &&
     Math.abs(rect1.y - rect2.y) < (rect1.height + rect2.height) / 2
   );
 };
 
-export const isPointInRect = (p: ControlPoint, box: NodeRect) => {
+export const isPointInRect = ( p: ControlPoint, box: NodeRect ) => {
   const sides = getRectSides(box);
   return (
     p.x >= sides.left &&
@@ -104,7 +104,7 @@ export const getVerticesFromRectVertex = (
   box: NodeRect,
   vertex: ControlPoint
 ): ControlPoint[] => {
-  const points = [vertex, ...getRectVertices(box)];
+  const points = [ vertex, ...getRectVertices(box) ];
   const { top, right, bottom, left } = getSidesFromPoints(points);
   return [
     { id: uuid(), x: left, y: top }, // topLeft
@@ -114,30 +114,30 @@ export const getVerticesFromRectVertex = (
   ];
 };
 
-export const getSidesFromPoints = (points: ControlPoint[]) => {
-  const left = Math.min(...points.map((p) => p.x));
-  const right = Math.max(...points.map((p) => p.x));
-  const top = Math.min(...points.map((p) => p.y));
-  const bottom = Math.max(...points.map((p) => p.y));
+export const getSidesFromPoints = ( points: ControlPoint[] ) => {
+  const left = Math.min(...points.map(( p ) => p.x));
+  const right = Math.max(...points.map(( p ) => p.x));
+  const top = Math.min(...points.map(( p ) => p.y));
+  const bottom = Math.max(...points.map(( p ) => p.y));
   return { top, right, bottom, left };
 };
 
 /**
  * Get the top, right, bottom, left of the Rect.
  */
-export const getRectSides = (box: NodeRect): RectSides => {
+export const getRectSides = ( box: NodeRect ): RectSides => {
   const { x: left, y: top, width, height } = box;
   const right = left + width;
   const bottom = top + height;
   return { top, right, bottom, left };
 };
 
-export const getRectVerticesFromSides = ({
-  top,
-  right,
-  bottom,
-  left,
-}: RectSides): ControlPoint[] => {
+export const getRectVerticesFromSides = ( {
+                                            top,
+                                            right,
+                                            bottom,
+                                            left,
+                                          }: RectSides ): ControlPoint[] => {
   return [
     { id: uuid(), x: left, y: top }, // topLeft
     { id: uuid(), x: right, y: top }, // topRight
@@ -146,23 +146,23 @@ export const getRectVerticesFromSides = ({
   ];
 };
 
-export const getRectVertices = (box: NodeRect) => {
+export const getRectVertices = ( box: NodeRect ) => {
   const sides = getRectSides(box);
   return getRectVerticesFromSides(sides);
 };
 
-export const mergeRects = (...boxes: NodeRect[]): NodeRect => {
+export const mergeRects = ( ...boxes: NodeRect[] ): NodeRect => {
   const left = Math.min(
-    ...boxes.reduce((pre, e) => [...pre, e.x, e.x + e.width], [] as number[])
+    ...boxes.reduce(( pre, e ) => [ ...pre, e.x, e.x + e.width ], [] as number[])
   );
   const right = Math.max(
-    ...boxes.reduce((pre, e) => [...pre, e.x, e.x + e.width], [] as number[])
+    ...boxes.reduce(( pre, e ) => [ ...pre, e.x, e.x + e.width ], [] as number[])
   );
   const top = Math.min(
-    ...boxes.reduce((pre, e) => [...pre, e.y, e.y + e.height], [] as number[])
+    ...boxes.reduce(( pre, e ) => [ ...pre, e.y, e.y + e.height ], [] as number[])
   );
   const bottom = Math.max(
-    ...boxes.reduce((pre, e) => [...pre, e.y, e.y + e.height], [] as number[])
+    ...boxes.reduce(( pre, e ) => [ ...pre, e.y, e.y + e.height ], [] as number[])
   );
   return {
     x: left,
@@ -185,7 +185,7 @@ export const getOffsetPoint = (
   box: HandlePosition,
   offset: number
 ): ControlPoint => {
-  switch (box.position) {
+  switch ( box.position ) {
     case Position.Top:
       return {
         id: uuid(),
@@ -209,8 +209,8 @@ export const isInLine = (
   p1: ControlPoint,
   p2: ControlPoint
 ) => {
-  const xPoints = p1.x < p2.x ? [p1.x, p2.x] : [p2.x, p1.x];
-  const yPoints = p1.y < p2.y ? [p1.y, p2.y] : [p2.y, p1.y];
+  const xPoints = p1.x < p2.x ? [ p1.x, p2.x ] : [ p2.x, p1.x ];
+  const yPoints = p1.y < p2.y ? [ p1.y, p2.y ] : [ p2.y, p1.y ];
   return (
     (p1.x === p.x && p.x === p2.x && p.y >= yPoints[0] && p.y <= yPoints[1]) ||
     (p1.y === p.y && p.y === p2.y && p.x >= xPoints[0] && p.x <= xPoints[1])
@@ -243,7 +243,7 @@ export interface OptimizePointsParams {
  * - Delete duplicate coordinate points.
  * - Correct source and target points.
  */
-export const optimizeInputPoints = (p: OptimizePointsParams) => {
+export const optimizeInputPoints = ( p: OptimizePointsParams ) => {
   // Merge points with similar coordinates
   let edgePoints = mergeClosePoints([
     p.source,
@@ -257,20 +257,20 @@ export const optimizeInputPoints = (p: OptimizePointsParams) => {
   const sourceOffset = edgePoints[0];
   const targetOffset = edgePoints[edgePoints.length - 1];
   // Correct source and target points.
-  if (isHorizontalFromPosition(p.source.position)) {
+  if ( isHorizontalFromPosition(p.source.position) ) {
     source.x = p.source.x;
   } else {
     source.y = p.source.y;
   }
-  if (isHorizontalFromPosition(p.target.position)) {
+  if ( isHorizontalFromPosition(p.target.position) ) {
     target.x = p.target.x;
   } else {
     target.y = p.target.y;
   }
   // Remove duplicate coordinate points
-  edgePoints = removeRepeatPoints(edgePoints).map((p, idx) => ({
+  edgePoints = removeRepeatPoints(edgePoints).map(( p, idx ) => ({
     ...p,
-    id: `${idx + 1}`,
+    id: `${ idx + 1 }`,
   }));
   return { source, target, sourceOffset, targetOffset, edgePoints };
 };
@@ -281,11 +281,11 @@ export const optimizeInputPoints = (p: OptimizePointsParams) => {
  * - Ensure that there are only 2 endpoints on a straight line.
  * - Remove control points inside the straight line.
  */
-export function reducePoints(points: ControlPoint[]): ControlPoint[] {
-  const optimizedPoints = [points[0]];
-  for (let i = 1; i < points.length - 1; i++) {
+export function reducePoints( points: ControlPoint[] ): ControlPoint[] {
+  const optimizedPoints = [ points[0] ];
+  for ( let i = 1; i < points.length - 1; i++ ) {
     const inSegment = isInLine(points[i], points[i - 1], points[i + 1]);
-    if (!inSegment) {
+    if ( !inSegment ) {
       optimizedPoints.push(points[i]);
     }
   }
@@ -302,20 +302,20 @@ export function mergeClosePoints(
 ): ControlPoint[] {
   // Discrete coordinates
   const positions = { x: [] as number[], y: [] as number[] };
-  const findPosition = (axis: "x" | "y", v: number) => {
+  const findPosition = ( axis: "x" | "y", v: number ) => {
     // eslint-disable-next-line no-param-reassign
     v = Math.floor(v);
     const ps = positions[axis];
-    let p = ps.find((e) => Math.abs(v - e) < threshold);
+    let p = ps.find(( e ) => Math.abs(v - e) < threshold);
     // eslint-disable-next-line eqeqeq
-    if (p == null) {
+    if ( p == null ) {
       p = v;
       positions[axis].push(v);
     }
     return p;
   };
 
-  const finalPoints = points.map((point) => {
+  const finalPoints = points.map(( point ) => {
     return {
       ...point,
       x: findPosition("x", point.x),
@@ -326,23 +326,23 @@ export function mergeClosePoints(
   return finalPoints;
 }
 
-export function isEqualPoint(p1: ControlPoint, p2: ControlPoint) {
+export function isEqualPoint( p1: ControlPoint, p2: ControlPoint ) {
   return p1.x === p2.x && p1.y === p2.y;
 }
 
 /**
  * Remove the duplicate point (retain the starting point and end point)
  */
-export function removeRepeatPoints(points: ControlPoint[]): ControlPoint[] {
+export function removeRepeatPoints( points: ControlPoint[] ): ControlPoint[] {
   const lastP = points[points.length - 1];
-  const uniquePoints = new Set([`${lastP.x}-${lastP.y}`]);
+  const uniquePoints = new Set([ `${ lastP.x }-${ lastP.y }` ]);
   const finalPoints: ControlPoint[] = [];
-  points.forEach((p, idx) => {
-    if (idx === points.length - 1) {
+  points.forEach(( p, idx ) => {
+    if ( idx === points.length - 1 ) {
       return finalPoints.push(p);
     }
-    const key = `${p.x}-${p.y}`;
-    if (!uniquePoints.has(key)) {
+    const key = `${ p.x }-${ p.y }`;
+    if ( !uniquePoints.has(key) ) {
       uniquePoints.add(key);
       finalPoints.push(p);
     }
@@ -364,7 +364,7 @@ const isSegmentsIntersected = (
   const s2x = p3.x - p2.x;
   const s2y = p3.y - p2.y;
 
-  if (s1x * s2y - s1y * s2x === 0) {
+  if ( s1x * s2y - s1y * s2x === 0 ) {
     // Lines are parallel, no intersection
     return false;
   }
@@ -384,10 +384,10 @@ export const isSegmentCrossingRect = (
   p2: ControlPoint,
   box: NodeRect
 ): boolean => {
-  if (box.width === 0 && box.height === 0) {
+  if ( box.width === 0 && box.height === 0 ) {
     return false;
   }
-  const [topLeft, topRight, bottomRight, bottomLeft] = getRectVertices(box);
+  const [ topLeft, topRight, bottomRight, bottomLeft ] = getRectVertices(box);
   return (
     isSegmentsIntersected(p1, p2, topLeft, topRight) ||
     isSegmentsIntersected(p1, p2, topRight, bottomRight) ||

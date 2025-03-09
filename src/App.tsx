@@ -1,15 +1,16 @@
-import "reactflow/dist/style.css";
+import "@xyflow/react/dist/style.css";
 
 import { useEffect } from "react";
-import ReactFlow, {
+import {
   Background,
   BackgroundVariant,
   Controls,
   MiniMap,
+  ReactFlow,
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
-} from "reactflow";
+} from "@xyflow/react";
 
 import { jsonDecode } from "@/utils/base";
 
@@ -50,6 +51,7 @@ const EditWorkFlow = () => {
   useEffect(() => {
     const { nodes, edges } = workflow2reactflow(convertData2Workflow(defaultWorkflow as any));
     layout({ nodes, edges, ...kDefaultLayoutConfig });
+    console.log(nodes)
   }, []);
 
   return (

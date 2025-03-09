@@ -1,5 +1,5 @@
 import dagre from "@dagrejs/dagre";
-import { getIncomers } from "reactflow";
+import { getIncomers } from "@xyflow/react";
 
 import { ReactflowNodeWithData } from "@/data/types";
 import { LayoutAlgorithm } from "..";
@@ -8,7 +8,7 @@ import { getEdgeLayouted, getNodeLayouted, getNodeSize } from "../../metadata";
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-export const layoutDagreTree: LayoutAlgorithm = async (props) => {
+export const layoutDagreTree: LayoutAlgorithm = async ( props ) => {
   const { nodes, edges, direction, visibility, spacing } = props;
   const isHorizontal = direction === "horizontal";
 
@@ -20,9 +20,9 @@ export const layoutDagreTree: LayoutAlgorithm = async (props) => {
   });
 
   const subWorkflowRootNodes: ReactflowNodeWithData[] = [];
-  nodes.forEach((node) => {
+  nodes.forEach(( node ) => {
     const incomers = getIncomers(node, nodes, edges);
-    if (incomers.length < 1) {
+    if ( incomers.length < 1 ) {
       // Node without input is the root node of sub-workflow
       subWorkflowRootNodes.push(node);
     }
@@ -33,25 +33,25 @@ export const layoutDagreTree: LayoutAlgorithm = async (props) => {
     });
   });
 
-  edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
+  edges.forEach(( edge ) => dagreGraph.setEdge(edge.source, edge.target));
 
   // Connect sub-workflows' root nodes to the rootNode
   dagreGraph.setNode("#root", { width: 1, height: 1 });
-  for (const subWorkflowRootNode of subWorkflowRootNodes) {
+  for ( const subWorkflowRootNode of subWorkflowRootNodes ) {
     dagreGraph.setEdge("#root", subWorkflowRootNode.id);
   }
 
   dagre.layout(dagreGraph);
 
   return {
-    nodes: nodes.map((node) => {
+    nodes: nodes.map(( node ) => {
       const position = dagreGraph.node(node.id);
       return getNodeLayouted({
         node,
         position,
         direction,
         visibility,
-        fixPosition: ({ x, y, width, height }) => ({
+        fixPosition: ( { x, y, width, height } ) => ({
           // This algorithm uses the center coordinate of the node as the reference point,
           // which needs adjustment for ReactFlow's topLeft coordinate system.
           x: x - width / 2,
@@ -59,6 +59,6 @@ export const layoutDagreTree: LayoutAlgorithm = async (props) => {
         }),
       });
     }),
-    edges: edges.map((edge) => getEdgeLayouted({ edge, visibility })),
+    edges: edges.map(( edge ) => getEdgeLayouted({ edge, visibility })),
   };
 };

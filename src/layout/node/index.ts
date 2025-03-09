@@ -9,6 +9,7 @@ import { layoutOrigin } from "./algorithms/origin";
 
 export type LayoutDirection = "vertical" | "horizontal";
 export type LayoutVisibility = "visible" | "hidden";
+
 export interface LayoutSpacing {
   x: number;
   y: number;
@@ -21,7 +22,7 @@ export type ReactflowLayoutConfig = {
   spacing: LayoutSpacing;
   /**
    * Whether to hide the layout
-   * 
+   *
    * We may need to hide layout if node sizes are not available during the first layout.
    */
   visibility: LayoutVisibility;
@@ -48,7 +49,7 @@ export const kLayoutAlgorithms: Record<string, LayoutAlgorithm> = {
 
 export const kDefaultLayoutConfig: ReactflowLayoutConfig = {
   algorithm: "ds-dag(s)",
-  direction: "horizontal",
+  direction: "vertical",
   visibility: "visible",
   spacing: { x: 120, y: 120 },
   reverseSourceHandles: false,
@@ -71,7 +72,7 @@ export const layoutReactflow = async (
   const { nodes = [], edges = [] } = config;
   const layout = kLayoutAlgorithms[config.algorithm];
   let result = await layout({ ...config, nodes, edges });
-  if (!result) {
+  if ( !result ) {
     // If the layout fails, fallback to the origin layout
     result = await layoutReactflow({
       ...config,

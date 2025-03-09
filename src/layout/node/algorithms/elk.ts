@@ -1,5 +1,5 @@
 import ELK from "elkjs/lib/elk.bundled.js";
-import { getIncomers } from "reactflow";
+import { getIncomers } from "@xyflow/react";
 
 import { ReactflowNodeWithData } from "@/data/types";
 import { LayoutAlgorithm, LayoutAlgorithmProps } from "..";
@@ -28,20 +28,20 @@ export const layoutELK = async (
   const isHorizontal = direction === "horizontal";
 
   const subWorkflowRootNodes: ReactflowNodeWithData[] = [];
-  const layoutNodes = nodes.map((node) => {
+  const layoutNodes = nodes.map(( node ) => {
     const incomers = getIncomers(node, nodes, edges);
-    if (incomers.length < 1) {
+    if ( incomers.length < 1 ) {
       // Node without input is the root node of sub-workflow
       subWorkflowRootNodes.push(node);
     }
     const { widthWithDefault, heightWithDefault } = getNodeSize(node);
-    const sourcePorts = node.data.sourceHandles.map((id) => ({
+    const sourcePorts = node.data.sourceHandles.map(( id ) => ({
       id,
       properties: {
         side: isHorizontal ? "EAST" : "SOUTH",
       },
     }));
-    const targetPorts = node.data.targetHandles.map((id) => ({
+    const targetPorts = node.data.targetHandles.map(( id ) => ({
       id,
       properties: {
         side: isHorizontal ? "WEST" : "NORTH",
@@ -51,29 +51,29 @@ export const layoutELK = async (
       id: node.id,
       width: widthWithDefault,
       height: heightWithDefault,
-      ports: [...targetPorts, ...sourcePorts],
+      ports: [ ...targetPorts, ...sourcePorts ],
       properties: {
         "org.eclipse.elk.portConstraints": "FIXED_ORDER",
       },
     };
   });
 
-  const layoutEdges = edges.map((edge) => {
+  const layoutEdges = edges.map(( edge ) => {
     return {
       id: edge.id,
-      sources: [edge.sourceHandle || edge.source],
-      targets: [edge.targetHandle || edge.target],
+      sources: [ edge.sourceHandle || edge.source ],
+      targets: [ edge.targetHandle || edge.target ],
     };
   });
 
   // Connect sub-workflows' root nodes to the rootNode
   const rootNode: any = { id: "#root", width: 1, height: 1 };
   layoutNodes.push(rootNode);
-  for (const subWorkflowRootNode of subWorkflowRootNodes) {
+  for ( const subWorkflowRootNode of subWorkflowRootNodes ) {
     layoutEdges.push({
-      id: `${rootNode.id}-${subWorkflowRootNode.id}`,
-      sources: [rootNode.id],
-      targets: [subWorkflowRootNode.id],
+      id: `${ rootNode.id }-${ subWorkflowRootNode.id }`,
+      sources: [ rootNode.id ],
+      targets: [ subWorkflowRootNode.id ],
     });
   }
 
@@ -95,15 +95,15 @@ export const layoutELK = async (
           : spacing.y.toString(),
       },
     })
-    .catch((e) => {
+    .catch(( e ) => {
       console.log("❌ ELK layout failed", e);
     });
 
-  if (!layouted?.children) {
+  if ( !layouted?.children ) {
     return;
   }
 
-  const layoutedNodePositions = layouted.children.reduce((pre, v) => {
+  const layoutedNodePositions = layouted.children.reduce(( pre, v ) => {
     pre[v.id] = {
       x: v.x ?? 0,
       y: v.y ?? 0,
@@ -112,18 +112,18 @@ export const layoutELK = async (
   }, {} as Record<string, { x: number; y: number }>);
 
   return {
-    nodes: nodes.map((node) => {
+    nodes: nodes.map(( node ) => {
       const position = layoutedNodePositions[node.id];
       return getNodeLayouted({ node, position, direction, visibility });
     }),
-    edges: edges.map((edge) => getEdgeLayouted({ edge, visibility })),
+    edges: edges.map(( edge ) => getEdgeLayouted({ edge, visibility })),
   };
 };
 
 export const kElkAlgorithms: Record<string, LayoutAlgorithm> = Object.keys(
   algorithms
-).reduce((pre, algorithm) => {
-  pre[algorithm] = (props: any) => {
+).reduce(( pre, algorithm ) => {
+  pre[algorithm] = ( props: any ) => {
     return layoutELK({ ...props, algorithm });
   };
   return pre;

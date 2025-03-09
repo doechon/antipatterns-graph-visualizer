@@ -1,4 +1,4 @@
-import {Edge, Node, NodeToolbarProps, XYPosition} from "reactflow";
+import { Edge, Node, NodeToolbarProps, XYPosition } from "@xyflow/react";
 
 import { ControlPoint } from "../layout/edge/point";
 
@@ -8,10 +8,11 @@ interface Analysis {
     [key: string]: number
   },
   cycles: string[][];
-  godClasses:{
+  godClasses: {
     [key: string]: number
   }
 }
+
 export interface Data {
   architectureAnalysis: Analysis,
   dependencyGraph: {

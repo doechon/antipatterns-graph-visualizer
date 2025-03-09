@@ -21,7 +21,12 @@ export const convertData2Workflow = ( data: Data ): Workflow => {
   }
 
   return {
-    nodes: data["dependencyGraph"]['nodes'].map(node => ({ id: node.id, type: 'base' })),
+    nodes: data["dependencyGraph"]['nodes'].map(node => {
+      return ({
+        id: node.id,
+        type: [ 'group' ].includes(node.type) ? node.type : 'base'
+      })
+    }),
     edges: preparedEdges,
     analysis: data["architectureAnalysis"]
   }
@@ -75,17 +80,24 @@ export const workflow2reactflow = ( workflow: Workflow & { bottleneckStatistics?
   }
 
   return {
-    nodes: nodes.map(( node ) => ({
-      ...node,
-      data: {
+    nodes: nodes.filter(node => node.id === 'bottleneck' || node.id in analysis.bottlenecks
+    ).map(( node ) => (
+      {
         ...node,
-        sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
-        targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
-        bottleneckPercent: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? analysis.bottlenecks[node.id] : void 0,
-        tooltip: { label: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? `BottleneckPercent: ${ analysis.bottlenecks[node.id] }` : void 0 }
-      },
-      position: { x: 0, y: 0 },
-    })),
+        data: {
+          ...node,
+          sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
+          targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
+          bottleneckPercent: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? analysis.bottlenecks[node.id] : void 0,
+          tooltip: { label: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? `BottleneckPercent: ${ analysis.bottlenecks[node.id] }` : void 0 },
+          width: node.id === 'bottleneck' ? 1000 : void 0,
+          height: node.id === 'bottleneck' ? 600 : void 0
+        },
+        position: { x: 0, y: 0 },
+        parentId: node.id in analysis.bottlenecks ? 'bottleneck' : void 0,
+        type: node.type,
+        extent: node.id in analysis.bottlenecks ? 'parent' : void 0,
+      })),
     edges: edges.map(( edge ) => ({
       ...edge,
       data: {

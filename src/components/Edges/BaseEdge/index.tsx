@@ -1,5 +1,5 @@
 import { ComponentType, memo } from "react";
-import { EdgeProps, BaseEdge as _BaseEdge } from "reactflow";
+import { BaseEdge as _BaseEdge, EdgeProps } from "@xyflow/react";
 
 import { ReactflowEdgeWithData } from "@/data/types";
 import { isConnectionBackward } from "@/layout/edge/edge";
@@ -9,27 +9,27 @@ import { EdgeControllers } from "../EdgeController";
 import { useRebuildEdge } from "./useRebuildEdge";
 
 export const BaseEdge: ComponentType<EdgeProps<ReactflowEdgeWithData>> = memo(
-  ({
-    id,
-    selected,
-    source,
-    target,
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    label,
-    labelStyle,
-    labelShowBg,
-    labelBgStyle,
-    labelBgPadding,
-    labelBgBorderRadius,
-    style,
-    sourcePosition,
-    targetPosition,
-    markerStart,
-    interactionWidth,
-  }) => {
+  ( {
+      id,
+      selected,
+      source,
+      target,
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      label,
+      labelStyle,
+      labelShowBg,
+      labelBgStyle,
+      labelBgPadding,
+      labelBgBorderRadius,
+      style,
+      sourcePosition,
+      targetPosition,
+      markerStart,
+      interactionWidth,
+    } ) => {
     useRebuildEdge(id);
 
     const isBackward = isConnectionBackward({
@@ -77,37 +77,37 @@ export const BaseEdge: ComponentType<EdgeProps<ReactflowEdgeWithData>> = memo(
     return (
       <>
         <_BaseEdge
-          path={path}
-          labelX={labelPosition.x}
-          labelY={labelPosition.y}
-          label={label}
-          labelStyle={labelStyle}
-          labelShowBg={labelShowBg}
-          labelBgStyle={labelBgStyle}
-          labelBgPadding={labelBgPadding}
-          labelBgBorderRadius={labelBgBorderRadius}
-          style={{
+          path={ path }
+          labelX={ labelPosition.x }
+          labelY={ labelPosition.y }
+          label={ label }
+          labelStyle={ labelStyle }
+          labelShowBg={ labelShowBg }
+          labelBgStyle={ labelBgStyle }
+          labelBgPadding={ labelBgPadding }
+          labelBgBorderRadius={ labelBgBorderRadius }
+          style={ {
             ...style,
             stroke: color,
             opacity: selected ? 1 : 0.5,
             strokeWidth: selected ? 2 : 1.5,
             strokeDasharray: edgeType === "dashed" ? "10,10" : undefined,
-          }}
-          markerEnd={`url('#${color.replace("#", "")}')`}
-          markerStart={markerStart}
-          interactionWidth={interactionWidth}
+          } }
+          markerEnd={ `url('#${ color.replace("#", "") }')` }
+          markerStart={ markerStart }
+          interactionWidth={ interactionWidth }
         />
-        {selected && (
+        { selected && (
           <EdgeControllers
-            id={id}
-            points={points}
-            sourcePosition={sourcePosition}
-            targetPosition={targetPosition}
-            offset={offset}
-            handlerWidth={handlerWidth}
-            handlerThickness={handlerThickness}
+            id={ id }
+            points={ points }
+            sourcePosition={ sourcePosition }
+            targetPosition={ targetPosition }
+            offset={ offset }
+            handlerWidth={ handlerWidth }
+            handlerThickness={ handlerThickness }
           />
-        )}
+        ) }
       </>
     );
   }

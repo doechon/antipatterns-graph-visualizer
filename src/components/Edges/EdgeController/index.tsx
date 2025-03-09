@@ -1,4 +1,4 @@
-import { EdgeLabelRenderer, Position } from "reactflow";
+import { EdgeLabelRenderer, Position } from "@xyflow/react";
 
 import { getLineCenter, ILine } from "@/layout/edge/edge";
 import { ControlPoint } from "@/layout/edge/point";
@@ -17,32 +17,32 @@ export interface EdgeControllersParams {
   handlerThickness: number;
 }
 
-export const EdgeControllers = (props: EdgeControllersParams) => {
+export const EdgeControllers = ( props: EdgeControllersParams ) => {
   const { points } = props;
   const edges: ILine[] = [];
-  for (let i = 0; i < points.length - 1; i++) {
+  for ( let i = 0; i < points.length - 1; i++ ) {
     edges.push({ start: points[i], end: points[i + 1] });
   }
   const edgeContext = getEdgeContext(props);
-  const smartEdges = edges.map((e, idx) => {
+  const smartEdges = edges.map(( e, idx ) => {
     return new SmartEdge({ idx, start: e.start, end: e.end, ctx: edgeContext });
   });
-  smartEdges.forEach((e, idx) => {
+  smartEdges.forEach(( e, idx ) => {
     e.previous = smartEdges[idx - 2];
     e.next = smartEdges[idx + 2];
   });
 
   return (
     <>
-      {edges.map((_, idx) => {
+      { edges.map(( _, idx ) => {
         const edge = smartEdges[idx];
-        return edge.canDrag && <EdgeController key={uuid()} edge={edge} />; // use uuid to force rebuild EdgeController
-      })}
+        return edge.canDrag && <EdgeController key={ uuid() } edge={ edge }/>; // use uuid to force rebuild EdgeController
+      }) }
     </>
   );
 };
 
-export const EdgeController = ({ edge }: { edge: SmartEdge }) => {
+export const EdgeController = ( { edge }: { edge: SmartEdge } ) => {
   const { start, end, onDragging } = edge;
   const { handlerWidth, handlerThickness } = edge.ctx;
   const center = getLineCenter(start, end);
@@ -50,7 +50,7 @@ export const EdgeController = ({ edge }: { edge: SmartEdge }) => {
 
   const { dragRef } = useEdgeDraggable({
     edge,
-    onDragging(dragId, dragFrom, position, delta) {
+    onDragging( dragId, dragFrom, position, delta ) {
       const oldFlowPosition = kReactflow.instance!.screenToFlowPosition({
         x: position.x - delta.x,
         y: position.y - delta.y,
@@ -63,7 +63,7 @@ export const EdgeController = ({ edge }: { edge: SmartEdge }) => {
       };
       const newStart = { ...start };
       const newEnd = { ...end };
-      if (isHorizontal) {
+      if ( isHorizontal ) {
         newStart.y += flowDelta.y;
         newEnd.y += flowDelta.y;
       } else {
@@ -82,19 +82,19 @@ export const EdgeController = ({ edge }: { edge: SmartEdge }) => {
   return (
     <EdgeLabelRenderer>
       <div
-        ref={dragRef}
+        ref={ dragRef }
         className="nodrag nopan"
-        style={{
+        style={ {
           cursor: isHorizontal ? "row-resize" : "col-resize",
           position: "absolute",
-          transform: `translate(-50%, -50%) translate(${center.x}px,${center.y}px)`,
-          width: isHorizontal ? `${handlerWidth}px` : `${handlerThickness}px`,
-          height: !isHorizontal ? `${handlerWidth}px` : `${handlerThickness}px`,
+          transform: `translate(-50%, -50%) translate(${ center.x }px,${ center.y }px)`,
+          width: isHorizontal ? `${ handlerWidth }px` : `${ handlerThickness }px`,
+          height: !isHorizontal ? `${ handlerWidth }px` : `${ handlerThickness }px`,
           borderRadius: "2px",
           background: "#3579f6",
           border: "1px solid #fff",
           pointerEvents: "all",
-        }}
+        } }
       />
     </EdgeLabelRenderer>
   );

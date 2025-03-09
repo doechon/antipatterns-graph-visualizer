@@ -1,4 +1,4 @@
-import { Position, XYPosition } from "reactflow";
+import { Position, XYPosition } from "@xyflow/react";
 
 import { uuid } from "@/utils/uuid";
 
@@ -9,23 +9,23 @@ export interface ILine {
   end: ControlPoint;
 }
 
-export const isHorizontalFromPosition = (position: Position) => {
-  return [Position.Left, Position.Right].includes(position);
+export const isHorizontalFromPosition = ( position: Position ) => {
+  return [ Position.Left, Position.Right ].includes(position);
 };
 
-export const isConnectionBackward = (props: {
+export const isConnectionBackward = ( props: {
   source: HandlePosition;
   target: HandlePosition;
-}) => {
+} ) => {
   const { source, target } = props;
   const isHorizontal = isHorizontalFromPosition(source.position);
   let isBackward = false;
-  if (isHorizontal) {
-    if (source.x > target.x) {
+  if ( isHorizontal ) {
+    if ( source.x > target.x ) {
       isBackward = true;
     }
   } else {
-    if (source.y > target.y) {
+    if ( source.y > target.y ) {
       isBackward = true;
     }
   }
@@ -35,7 +35,7 @@ export const isConnectionBackward = (props: {
 /**
  * Get the distance between two points
  */
-export const distance = (p1: ControlPoint, p2: ControlPoint) => {
+export const distance = ( p1: ControlPoint, p2: ControlPoint ) => {
   return Math.hypot(p2.x - p1.x, p2.y - p1.y);
 };
 
@@ -90,7 +90,7 @@ export function getPathWithRoundCorners(
   points: ControlPoint[],
   radius: number
 ): string {
-  if (points.length < 2) {
+  if ( points.length < 2 ) {
     throw new Error("At least 2 points are required.");
   }
 
@@ -102,9 +102,9 @@ export function getPathWithRoundCorners(
   ) {
     const { x, y } = center;
 
-    if (!areLinesPerpendicular(p1, center, center, p2)) {
+    if ( !areLinesPerpendicular(p1, center, center, p2) ) {
       // The two line segments are not vertical, and return directly to the straight line
-      return `L ${x} ${y}`;
+      return `L ${ x } ${ y }`;
     }
 
     const d1 = distance(center, p1);
@@ -117,21 +117,21 @@ export function getPathWithRoundCorners(
     const xDir = isHorizontal ? (p1.x < p2.x ? -1 : 1) : p1.x < p2.x ? 1 : -1;
     const yDir = isHorizontal ? (p1.y < p2.y ? 1 : -1) : p1.y < p2.y ? -1 : 1;
 
-    if (isHorizontal) {
-      return `L ${x + radius * xDir},${y}Q ${x},${y} ${x},${y + radius * yDir}`;
+    if ( isHorizontal ) {
+      return `L ${ x + radius * xDir },${ y }Q ${ x },${ y } ${ x },${ y + radius * yDir }`;
     }
 
-    return `L ${x},${y + radius * yDir}Q ${x},${y} ${x + radius * xDir},${y}`;
+    return `L ${ x },${ y + radius * yDir }Q ${ x },${ y } ${ x + radius * xDir },${ y }`;
   }
 
   const path: string[] = [];
-  for (let i = 0; i < points.length; i++) {
-    if (i === 0) {
+  for ( let i = 0; i < points.length; i++ ) {
+    if ( i === 0 ) {
       // Starting
-      path.push(`M ${points[i].x} ${points[i].y}`);
-    } else if (i === points.length - 1) {
+      path.push(`M ${ points[i].x } ${ points[i].y }`);
+    } else if ( i === points.length - 1 ) {
       // Ending
-      path.push(`L ${points[i].x} ${points[i].y}`);
+      path.push(`L ${ points[i].x } ${ points[i].y }`);
     } else {
       path.push(
         getRoundCorner(points[i], points[i - 1], points[i + 1], radius)
@@ -147,14 +147,14 @@ export function getPathWithRoundCorners(
  */
 export function getLongestLine(
   points: ControlPoint[]
-): [ControlPoint, ControlPoint] {
-  let longestLine: [ControlPoint, ControlPoint] = [points[0], points[1]];
+): [ ControlPoint, ControlPoint ] {
+  let longestLine: [ ControlPoint, ControlPoint ] = [ points[0], points[1] ];
   let longestDistance = distance(...longestLine);
-  for (let i = 1; i < points.length - 1; i++) {
+  for ( let i = 1; i < points.length - 1; i++ ) {
     const _distance = distance(points[i], points[i + 1]);
-    if (_distance > longestDistance) {
+    if ( _distance > longestDistance ) {
       longestDistance = _distance;
-      longestLine = [points[i], points[i + 1]];
+      longestLine = [ points[i], points[i + 1] ];
     }
   }
   return longestLine;
@@ -169,15 +169,15 @@ export function getLabelPosition(
   points: ControlPoint[],
   minGap = 20
 ): XYPosition {
-  if (points.length % 2 === 0) {
+  if ( points.length % 2 === 0 ) {
     // Find the midpoint of the polyline
     const middleP1 = points[points.length / 2 - 1];
     const middleP2 = points[points.length / 2];
-    if (distance(middleP1, middleP2) > minGap) {
+    if ( distance(middleP1, middleP2) > minGap ) {
       return getLineCenter(middleP1, middleP2);
     }
   }
-  const [start, end] = getLongestLine(points);
+  const [ start, end ] = getLongestLine(points);
   return {
     x: (start.x + end.x) / 2,
     y: (start.y + end.y) / 2,

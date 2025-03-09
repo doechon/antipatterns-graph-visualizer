@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef } from "react";
-import { XYPosition } from "reactflow";
-import { XSta, useXState } from "xsta";
+import { XYPosition } from "@xyflow/react";
+import { useXState, XSta } from "xsta";
 
 import { isEqualPoint } from "../../../layout/edge/point";
 import { SmartEdge } from "./smart-edge";
@@ -20,7 +20,7 @@ interface UseDraggableParams {
 }
 
 let _id = 0;
-export const useEdgeDraggable = (props: UseDraggableParams) => {
+export const useEdgeDraggable = ( props: UseDraggableParams ) => {
   const dragRef = useRef() as any;
   const propsRef = useRef(props);
   propsRef.current = props;
@@ -34,14 +34,14 @@ export const useEdgeDraggable = (props: UseDraggableParams) => {
   const dragId = isDraggingEdge() ? SmartEdge.draggingEdge!.dragId : dragFrom;
   const isDraggingKey = "isDragging" + dragId;
   const startPositionKey = "startPositionKey-" + dragId;
-  const [_, setIsDragging] = useXState(isDraggingKey, false);
-  const [__, setStartPosition] = useXState(startPositionKey, [0, 0]);
+  const [ _, setIsDragging ] = useXState(isDraggingKey, false);
+  const [ __, setStartPosition ] = useXState(startPositionKey, [ 0, 0 ]);
   const getIsDragging = () => XSta.get(isDraggingKey);
   const getStartPosition = () => XSta.get(startPositionKey);
 
   useEffect(() => {
     return () => {
-      if (SmartEdge.draggingEdge?.dragId !== dragId) {
+      if ( SmartEdge.draggingEdge?.dragId !== dragId ) {
         // dispose states
         XSta.delete(isDraggingKey);
         XSta.delete(startPositionKey);
@@ -49,15 +49,15 @@ export const useEdgeDraggable = (props: UseDraggableParams) => {
     };
   }, []);
 
-  const onDragStart = (event: MouseEvent) => {
-    if (getIsDragging()) {
+  const onDragStart = ( event: MouseEvent ) => {
+    if ( getIsDragging() ) {
       return;
     }
-    if (event.button !== 0) {
+    if ( event.button !== 0 ) {
       // Not a left mouse button click event
       return;
     }
-    if (event.target !== dragRef.current) {
+    if ( event.target !== dragRef.current ) {
       // Not clicked on the current element
       return;
     }
@@ -68,12 +68,12 @@ export const useEdgeDraggable = (props: UseDraggableParams) => {
       end: propsRef.current.edge.end,
     };
     setIsDragging(true);
-    setStartPosition([event.clientX, event.clientY]);
+    setStartPosition([ event.clientX, event.clientY ]);
     propsRef.current.onDragStart?.();
   };
 
   const onDragEnd = () => {
-    if (!getIsDragging()) {
+    if ( !getIsDragging() ) {
       return;
     }
     SmartEdge.draggingEdge = undefined;
@@ -81,11 +81,11 @@ export const useEdgeDraggable = (props: UseDraggableParams) => {
     propsRef.current.onDragEnd?.();
   };
 
-  const onDragging = (event: MouseEvent) => {
-    if (!getIsDragging()) {
+  const onDragging = ( event: MouseEvent ) => {
+    if ( !getIsDragging() ) {
       return;
     }
-    if (event.buttons !== 1) {
+    if ( event.buttons !== 1 ) {
       // Ending drag because it's not a left mouse button drag event
       return onDragEnd();
     }
@@ -101,7 +101,7 @@ export const useEdgeDraggable = (props: UseDraggableParams) => {
         y: event.clientY - getStartPosition()[1],
       }
     );
-    setStartPosition([event.clientX, event.clientY]);
+    setStartPosition([ event.clientX, event.clientY ]);
   };
 
   useEffect(() => {
