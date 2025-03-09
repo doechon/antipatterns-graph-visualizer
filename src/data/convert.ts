@@ -80,8 +80,7 @@ export const workflow2reactflow = ( workflow: Workflow & { bottleneckStatistics?
   }
 
   return {
-    nodes: nodes.filter(node => node.id === 'bottleneck' || node.id in analysis.bottlenecks
-    ).map(( node ) => (
+    nodes: nodes.filter(node => node.id === 'bottleneck' || node.id in analysis.bottlenecks).map(( node ) => (
       {
         ...node,
         data: {
@@ -90,8 +89,6 @@ export const workflow2reactflow = ( workflow: Workflow & { bottleneckStatistics?
           targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
           bottleneckPercent: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? analysis.bottlenecks[node.id] : void 0,
           tooltip: { label: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? `BottleneckPercent: ${ analysis.bottlenecks[node.id] }` : void 0 },
-          width: node.id === 'bottleneck' ? 1000 : void 0,
-          height: node.id === 'bottleneck' ? 600 : void 0
         },
         position: { x: 0, y: 0 },
         parentId: node.id in analysis.bottlenecks ? 'bottleneck' : void 0,

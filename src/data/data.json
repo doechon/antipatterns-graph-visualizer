@@ -75,6 +75,10 @@
         "type": "group"
       },
       {
+        "id": "cycle",
+        "type": "group"
+      },
+      {
         "id": "org.springframework.samples.petclinic.config.PetclinicConfigServerApplicationTests",
         "type": "class"
       },

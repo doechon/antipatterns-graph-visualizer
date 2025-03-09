@@ -1,7 +1,7 @@
 import "./styles.css";
 
 import { ComponentType, memo, useState } from "react";
-import { Handle, NodeProps, NodeToolbar, Position } from "@xyflow/react";
+import { Handle, NodeProps, NodeResizeControl, NodeToolbar, Position } from "@xyflow/react";
 
 import { ReactflowNodeData } from "@/data/types";
 import { kReactflowLayoutConfig } from "@/components/ControlPanel";
@@ -37,15 +37,21 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         onBlur={ handleBlur }
         style={ data?.bottleneckPercent !== void 0 ? { background: `${ hsl }` } : {} }
       >
-
-        <NodeToolbar
-          isVisible={ isTooltipVisible }
-          className="rounded-sm bg-primary p-2 text-primary-foreground"
-          position={ Position.Top }
-          tabIndex={ 1 }
-        >
-          { data?.tooltip?.label }
-        </NodeToolbar>
+        <NodeResizeControl minWidth={ 100 } minHeight={ 50 }>
+          <ResizeIcon/>
+        </NodeResizeControl>
+        {
+          data?.tooltip?.label && (
+            <NodeToolbar
+              isVisible={ isTooltipVisible }
+              className="rounded-sm bg-primary p-2 text-primary-foreground"
+              position={ Position.Top }
+              tabIndex={ 1 }
+            >
+              { data?.tooltip?.label }
+            </NodeToolbar>
+          )
+        }
         <div
           className={ `handles handles-${ direction } targets` }
           style={ {
@@ -83,5 +89,29 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
     );
   }
 );
+
+function ResizeIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      strokeWidth="2"
+      stroke="#ff0071"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={ { position: 'absolute', right: 5, bottom: 5 } }
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <polyline points="16 20 20 20 20 16"/>
+      <line x1="14" y1="14" x2="20" y2="20"/>
+      <polyline points="8 4 4 4 4 8"/>
+      <line x1="4" y1="4" x2="10" y2="10"/>
+    </svg>
+  );
+}
+
 
 BaseNode.displayName = "BaseNode";
