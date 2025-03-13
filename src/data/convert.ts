@@ -93,17 +93,7 @@ export const workflow2reactflow = ( workflow: Workflow ): Reactflow => {
       } else if ( node.id in analysis.godClasses ) {
         parentId = 'godClasses'
       }
-      console.log(node)
-      console.log('Object.values(stats)', Object.values(stats))
-      console.log('Object.values(stats).every(x => x === void 0)', Object.values(stats).every(x => x === void 0))
-      console.log('workflow.showStats !== void 0', workflow.showStats !== void 0)
-      console.log('workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0', workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0)
-      console.log('workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0 && Object.values(stats).every(x => x === void 0)',
-        workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0 && Object.values(stats).every(x => x === void 0))
-      console.log('------------')
       if ( workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0 && !(Object.keys(workflow.showStats).includes(node.id)) && Object.values(stats).every(x => x === void 0) ) {
-        console.log('1')
-        console.log('acc', acc)
         return acc
       }
       acc.push({
