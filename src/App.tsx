@@ -38,20 +38,20 @@ const EditWorkFlow = () => {
     if ( layouting ) {
       return;
     }
+
     const input = props.workflow;
     const data = jsonDecode(input);
     if ( !data ) {
       alert("Invalid workflow JSON data");
       return;
     }
-    const workflow = workflow2reactflow({ ...data, bottleneckStatistics: props.bottleneckStatistics });
+    const workflow = workflow2reactflow({ ...data, ...props });
     await layout({ ...workflow, ...props });
   };
 
   useEffect(() => {
     const { nodes, edges } = workflow2reactflow(convertData2Workflow(defaultWorkflow as any));
     layout({ nodes, edges, ...kDefaultLayoutConfig });
-    console.log(nodes)
   }, []);
 
   return (

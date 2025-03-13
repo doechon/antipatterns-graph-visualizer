@@ -1,5 +1,5 @@
 import { lastOf } from "@/utils/base";
-import { Data, Reactflow, Workflow } from "./types";
+import { Data, Reactflow, ReactflowNodeWithData, Workflow } from "./types";
 
 export const convertData2Workflow = ( data: Data ): Workflow => {
   const edgesCount: Record<string, number> = {};
@@ -32,7 +32,7 @@ export const convertData2Workflow = ( data: Data ): Workflow => {
   }
 }
 
-export const workflow2reactflow = ( workflow: Workflow & { bottleneckStatistics?: boolean } ): Reactflow => {
+export const workflow2reactflow = ( workflow: Workflow ): Reactflow => {
   const { nodes = [], edges = [], analysis } = workflow ?? {};
   const edgesCount: Record<string, number> = {};
   const edgesIndex: Record<string, { source: number; target: number }> = {};
@@ -80,21 +80,48 @@ export const workflow2reactflow = ( workflow: Workflow & { bottleneckStatistics?
   }
 
   return {
-    nodes: nodes.filter(node => node.id === 'bottleneck' || node.id in analysis.bottlenecks).map(( node ) => (
-      {
+    nodes: nodes.reduce(( acc, node ) => {
+      const stats = {
+        bottleneckPercent: workflow.showStats?.bottleneck && analysis.bottlenecks && node.id in analysis.bottlenecks ? analysis.bottlenecks[node.id] : void 0,
+        godClassesPercent: workflow.showStats?.godClasses && analysis.godClasses && node.id in analysis.godClasses ? analysis.godClasses[node.id] : void 0,
+      }
+      const label = Object.entries(stats).reduce(( acc, curVal ) => curVal[1] ? acc += `${ curVal[0] }: ${ curVal[1] }%\n` : '', '')
+
+      let parentId = void 0
+      if ( node.id in analysis.bottlenecks ) {
+        parentId = 'bottleneck'
+      } else if ( node.id in analysis.godClasses ) {
+        parentId = 'godClasses'
+      }
+      console.log(node)
+      console.log('Object.values(stats)', Object.values(stats))
+      console.log('Object.values(stats).every(x => x === void 0)', Object.values(stats).every(x => x === void 0))
+      console.log('workflow.showStats !== void 0', workflow.showStats !== void 0)
+      console.log('workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0', workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0)
+      console.log('workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0 && Object.values(stats).every(x => x === void 0)',
+        workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0 && Object.values(stats).every(x => x === void 0))
+      console.log('------------')
+      if ( workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0 && !(Object.keys(workflow.showStats).includes(node.id)) && Object.values(stats).every(x => x === void 0) ) {
+        console.log('1')
+        console.log('acc', acc)
+        return acc
+      }
+      acc.push({
         ...node,
         data: {
           ...node,
           sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
           targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
-          bottleneckPercent: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? analysis.bottlenecks[node.id] : void 0,
-          tooltip: { label: node.id in analysis.bottlenecks && workflow.bottleneckStatistics ? `BottleneckPercent: ${ analysis.bottlenecks[node.id] }` : void 0 },
+          ...stats,
+          tooltip: { label: label ? label : void 0 },
         },
         position: { x: 0, y: 0 },
-        parentId: node.id in analysis.bottlenecks ? 'bottleneck' : void 0,
+        parentId,
         type: node.type,
-        extent: node.id in analysis.bottlenecks ? 'parent' : void 0,
-      })),
+        extent: node.id in analysis.bottlenecks || node.id in analysis.godClasses ? 'parent' : void 0,
+      })
+      return acc
+    }, [] as ReactflowNodeWithData[]) ?? [],
     edges: edges.map(( edge ) => ({
       ...edge,
       data: {

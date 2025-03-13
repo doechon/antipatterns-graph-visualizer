@@ -19,6 +19,7 @@
     "d3-hierarchy": "^3.1.2",
     "elkjs": "^0.9.3",
     "leva": "^0.9.35",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.477.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

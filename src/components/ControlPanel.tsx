@@ -60,67 +60,59 @@ const reverseSourceHandles = Object.entries({
   } as any
 );
 
-const BottleneckStatistics = Object.entries({
-  true: true,
-  false: false
-}).reduce(
-  ( pre, [ key, value ] ) => {
-    pre[key] = value;
-    return pre;
-  },
-  {
-    [kDefaultLayoutConfig.bottleneckStatistics]: kDefaultLayoutConfig.bottleneckStatistics,
-  } as any
-)
 
 export const ControlPanel = ( props: { layoutReactflow: any } ) => {
   const { layoutReactflow } = props;
 
   const [ state, setState ] = useControls(() => {
     return {
-      workflow: {
-        order: 1,
-        label: "Workflow",
-        rows: 3,
-        value: workflowInputHint,
-      },
       algorithm: {
-        order: 2,
+        order: 1,
         label: "Algorithms",
         options: algorithms,
       },
       direction: {
-        order: 3,
+        order: 2,
         label: "Direction",
         options: directions,
       },
       spacing: {
-        order: 4,
+        order: 3,
         label: "Spacing",
         value: kDefaultLayoutConfig.spacing as any,
         joystick: false,
       },
       reverseSourceHandles: {
-        order: 5,
+        order: 4,
         label: "Order",
         options: reverseSourceHandles,
       },
-      bottleneckStatistics: {
+      bottleneck: {
+        order: 5,
+        label: "Bottleneck",
+        options: [ true, false ],
+        value: false,
+      },
+      godClasses: {
         order: 6,
-        label: 'BottleNeck Statistics',
-        options: BottleneckStatistics
+        label: "GodClasses",
+        options: [ true, false ],
+        value: false,
       },
       layout: {
         order: 7,
         label: "Layout",
         ...button(( get ) => {
           layoutReactflow({
-            workflow: get("workflow"),
+            workflow: workflowInputHint,
             algorithm: get("algorithm"),
             direction: get("direction"),
             spacing: get("spacing"),
-            reverseSourceHandles: get("reverseSourceHandles"),
-            bottleneckStatistics: get("bottleneckStatistics")
+            reverseSourceHandles: false,
+            showStats: {
+              bottleneck: get("bottleneck"),
+              godClasses: get("godClasses")
+            }
           });
         }),
       },

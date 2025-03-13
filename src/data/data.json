@@ -75,6 +75,10 @@
         "type": "group"
       },
       {
+        "id": "godClasses",
+        "type": "group"
+      },
+      {
         "id": "cycle",
         "type": "group"
       },

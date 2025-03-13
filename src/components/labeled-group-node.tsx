@@ -10,10 +10,7 @@ export type GroupNodeLabelProps = HTMLAttributes<HTMLDivElement>;
 export const GroupNodeLabel = forwardRef<HTMLDivElement, GroupNodeLabelProps>(
   ( { children, className, ...props }, ref ) => {
     return (
-      <div ref={ ref } className={ cn("h-full w-full",
-        props.data?.width && `w-${ props.data.width }`,
-        props.data?.height && `h-${ props.data.height }`
-      ) } { ...props }>
+      <div ref={ ref } className={ cn("h-full w-full") } { ...props }>
         <div
           className={ cn(
             "w-fit bg-gray-200 bg-secondary p-2 text-xs text-card-foreground",

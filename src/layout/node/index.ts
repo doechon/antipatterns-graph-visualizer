@@ -17,7 +17,6 @@ export interface LayoutSpacing {
 
 export type ReactflowLayoutConfig = {
   algorithm: LayoutAlgorithms;
-  bottleneckStatistics: boolean;
   direction: LayoutDirection;
   spacing: LayoutSpacing;
   /**
@@ -30,6 +29,13 @@ export type ReactflowLayoutConfig = {
    * Whether to reverse the order of source handles.
    */
   reverseSourceHandles: boolean;
+  /**
+   * show stats on graph
+   */
+  showStats: {
+    bottleneck: boolean,
+    godClasses: boolean;
+  };
 };
 
 export type LayoutAlgorithmProps = Reactflow &
@@ -53,7 +59,10 @@ export const kDefaultLayoutConfig: ReactflowLayoutConfig = {
   visibility: "visible",
   spacing: { x: 120, y: 120 },
   reverseSourceHandles: false,
-  bottleneckStatistics: false
+  showStats: {
+    bottleneck: false,
+    godClasses: false
+  }
 };
 
 export type LayoutAlgorithms =
