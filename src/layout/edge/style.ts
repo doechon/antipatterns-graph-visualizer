@@ -4,7 +4,7 @@ import { getBezierPath, Position } from "@xyflow/react";
 import { getBasePath } from ".";
 import { kBaseMarkerColor, kBaseMarkerColors, kNoMarkerColor, kYesMarkerColor, } from "../../components/Edges/Marker";
 import { isEqual } from "../../utils/diff";
-import { EdgeLayout, ReactflowEdgeWithData } from "../../data/types";
+import { EdgeLayout, ReactflowEdgeWithData } from "../../data-convert/types.ts";
 import { kReactflow } from "../../states/reactflow";
 import { getPathWithRoundCorners } from "./edge";
 

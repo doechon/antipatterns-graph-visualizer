@@ -1,6 +1,6 @@
 import { uuid } from "@/utils/uuid";
 
-import { ReactflowEdgeWithData } from "@/data/types";
+import { ReactflowEdgeWithData } from "@/data-convert/types.ts";
 import {
   areLinesReverseDirection,
   distance,
@@ -8,11 +8,7 @@ import {
   isHorizontalFromPosition,
   isLineContainsPoint,
 } from "@/layout/edge/edge";
-import {
-  ControlPoint,
-  getOffsetPoint,
-  reducePoints,
-} from "@/layout/edge/point";
+import { ControlPoint, getOffsetPoint, reducePoints, } from "@/layout/edge/point";
 import { kReactflow } from "@/states/reactflow";
 import { EdgeControllersParams } from ".";
 import { rebuildEdge } from "../BaseEdge/useRebuildEdge";
@@ -24,7 +20,7 @@ interface EdgeContext extends EdgeControllersParams {
   targetOffset: ControlPoint;
 }
 
-export const getEdgeContext = (props: EdgeControllersParams): EdgeContext => {
+export const getEdgeContext = ( props: EdgeControllersParams ): EdgeContext => {
   const { points, offset, sourcePosition, targetPosition } = props;
   const source = points[0];
   const target = points[points.length - 1];
@@ -60,14 +56,14 @@ export class SmartEdge {
   public previous?: SmartEdge;
   public next?: SmartEdge;
 
-  constructor(options: {
+  constructor( options: {
     idx: number;
     start: ControlPoint;
     end: ControlPoint;
     ctx: EdgeContext;
     previous?: SmartEdge;
     next?: SmartEdge;
-  }) {
+  } ) {
     this.idx = options.idx;
     this.start = options.start;
     this.end = options.end;
@@ -117,7 +113,7 @@ export class SmartEdge {
    * Whether the edge can be dragged.
    */
   get canDrag() {
-    if (this.isStartFixed || this.isEndFixed) {
+    if ( this.isStartFixed || this.isEndFixed ) {
       // The connection lines on both ends of the node should not be dragged unless the edge can be split.
       return this.canSplit;
     }
@@ -147,7 +143,7 @@ export class SmartEdge {
     const isTempDraggingEdge =
       SmartEdge.draggingEdge?.dragId === dragId &&
       SmartEdge.draggingEdge?.target;
-    if (isTempDraggingEdge) {
+    if ( isTempDraggingEdge ) {
       // Adjust the offset based on the previous dragging edge position.
       to = {
         start: {
@@ -182,39 +178,39 @@ export class SmartEdge {
       ? Math.abs(from.start.y - to.start.y)
       : Math.abs(from.start.x - to.start.x);
 
-    if (this.isSource) {
+    if ( this.isSource ) {
       needSplit = true;
-      if (sourceDelta > minGap) {
+      if ( sourceDelta > minGap ) {
         startSplit = true;
       }
-    } else if (this.isTarget) {
+    } else if ( this.isTarget ) {
       needSplit = true;
-      if (targetDelta > minGap) {
+      if ( targetDelta > minGap ) {
         startSplit = true;
       }
     } else {
-      if (this.isSourceOffset && sourceDelta < this.ctx.offset) {
+      if ( this.isSourceOffset && sourceDelta < this.ctx.offset ) {
         needSplit = true;
-        if (moveDelta > minGap) {
+        if ( moveDelta > minGap ) {
           startSplit = true;
         }
-      } else if (this.isTargetOffset && targetDelta < this.ctx.offset) {
+      } else if ( this.isTargetOffset && targetDelta < this.ctx.offset ) {
         needSplit = true;
-        if (moveDelta > minGap) {
+        if ( moveDelta > minGap ) {
           startSplit = true;
         }
       }
     }
 
-    if (!needSplit) {
+    if ( !needSplit ) {
       return;
     }
 
     const _offset = (distance(from.start, from.end) - this.minHandlerWidth) / 2;
-    if (this.isHorizontalLine) {
+    if ( this.isHorizontalLine ) {
       const direction = from.start.x < from.end.x ? 1 : -1;
       const offset = _offset * direction;
-      if (!startSplit) {
+      if ( !startSplit ) {
         SmartEdge.draggingEdge = {
           dragId,
           start: from.start,
@@ -239,7 +235,7 @@ export class SmartEdge {
     } else {
       const direction = from.start.y < from.end.y ? 1 : -1;
       const offset = _offset * direction;
-      if (!startSplit) {
+      if ( !startSplit ) {
         SmartEdge.draggingEdge = {
           dragId,
           start: from.start,
@@ -279,7 +275,7 @@ export class SmartEdge {
     const endPoints = this.next
       ? this.ctx.points.slice(this.next.idx + 1 + 1)
       : [];
-    if (this.isHorizontalLine) {
+    if ( this.isHorizontalLine ) {
       const fromY = from.start.y;
       const toY = to.start.y;
       const preY = this.previous?.start.y;
@@ -296,9 +292,9 @@ export class SmartEdge {
       const currentDistance = Math.abs(toY - targetY);
       const needMerge =
         Math.abs(fromY - targetY) > currentDistance && currentDistance < minGap;
-      if (needMerge) {
+      if ( needMerge ) {
         // Merge to new endpoint
-        if (preY === nextY && preY === targetY) {
+        if ( preY === nextY && preY === targetY ) {
           // Previous, Current, Next merged into a straight line
           SmartEdge.draggingEdge = {
             dragId,
@@ -311,8 +307,8 @@ export class SmartEdge {
             SmartEdge.draggingEdge.end,
             ...endPoints,
           ];
-        } else if (preY === targetY) {
-          if (this.next) {
+        } else if ( preY === targetY ) {
+          if ( this.next ) {
             // Previous, Current merged into a straight line
             SmartEdge.draggingEdge = {
               dragId,
@@ -343,7 +339,7 @@ export class SmartEdge {
             ];
           }
         } else {
-          if (this.previous) {
+          if ( this.previous ) {
             // Current, Next merged into a straight line
             SmartEdge.draggingEdge = {
               dragId,
@@ -392,9 +388,9 @@ export class SmartEdge {
       const currentDistance = Math.abs(toX - targetX);
       const needMerge =
         Math.abs(fromX - targetX) > currentDistance && currentDistance < minGap;
-      if (needMerge) {
+      if ( needMerge ) {
         // Merge to new endpoint
-        if (preX === nextX && preX === targetX) {
+        if ( preX === nextX && preX === targetX ) {
           // Previous, Current, Next merged into a straight line
           SmartEdge.draggingEdge = {
             dragId,
@@ -407,8 +403,8 @@ export class SmartEdge {
             SmartEdge.draggingEdge.end,
             ...endPoints,
           ];
-        } else if (preX === targetX) {
-          if (this.next) {
+        } else if ( preX === targetX ) {
+          if ( this.next ) {
             // Previous, Current merged into a straight line
             SmartEdge.draggingEdge = {
               dragId,
@@ -439,7 +435,7 @@ export class SmartEdge {
             ];
           }
         } else {
-          if (this.previous) {
+          if ( this.previous ) {
             // Current, Next merged into a straight line
             SmartEdge.draggingEdge = {
               dragId,
@@ -480,8 +476,8 @@ export class SmartEdge {
    * 1. Invalid if there is an overlapping path.
    * 2. Invalid if it does not contain node offset endpoints.
    */
-  isValidPoints = (points: ControlPoint[]): boolean => {
-    if (points.length < 4) {
+  isValidPoints = ( points: ControlPoint[] ): boolean => {
+    if ( points.length < 4 ) {
       // Paths with less than 3 edges are always valid.
       return true;
     }
@@ -522,7 +518,7 @@ export class SmartEdge {
     return true;
   };
 
-  rebuildEdge = (points: ControlPoint[]) => {
+  rebuildEdge = ( points: ControlPoint[] ) => {
     const edge: ReactflowEdgeWithData = kReactflow.instance!.getEdge(
       this.ctx.id
     )!;
@@ -530,35 +526,35 @@ export class SmartEdge {
     rebuildEdge(this.ctx.id);
   };
 
-  onDragging = ({
-    dragId,
-    from,
-    to,
-  }: {
+  onDragging = ( {
+                   dragId,
+                   from,
+                   to,
+                 }: {
     dragId: string;
     dragFrom: string;
     from: ILine;
     to: ILine;
-  }) => {
-    if (distance(from.start, to.start) < 0.00001) {
+  } ) => {
+    if ( distance(from.start, to.start) < 0.00001 ) {
       // The drag distance is very small, only refresh
       return this.rebuildEdge(this.ctx.points);
     }
     // Automatically split edges if there are fixed endpoints at both ends
-    if (this.isStartFixed || this.isEndFixed) {
+    if ( this.isStartFixed || this.isEndFixed ) {
       const splittedPoints = this.splitPoints(dragId, from, to);
-      if (splittedPoints) {
+      if ( splittedPoints ) {
         return this.rebuildEdge(splittedPoints);
       }
     }
     // Merge nearby edges
     const mergedPoints = this.mergePoints(dragId, from, to);
-    if (mergedPoints && this.isValidPoints(mergedPoints)) {
+    if ( mergedPoints && this.isValidPoints(mergedPoints) ) {
       return this.rebuildEdge(mergedPoints);
     }
     // Update current edge coordinates
     const { x: targetX, y: targetY } = to.start;
-    if (this.isHorizontalLine) {
+    if ( this.isHorizontalLine ) {
       this.start.y = targetY;
       this.end.y = targetY;
     } else {

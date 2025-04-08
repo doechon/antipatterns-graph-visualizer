@@ -1,6 +1,6 @@
 import { removeEmpty } from "@/utils/base";
 
-import { Reactflow } from "../../data/types";
+import { Reactflow } from "../../data-convert/types.ts";
 import { D3DAGLayoutAlgorithms, kD3DAGAlgorithms } from "./algorithms/d3-dag";
 import { layoutD3Hierarchy } from "./algorithms/d3-hierarchy";
 import { layoutDagreTree } from "./algorithms/dagre-tree";
@@ -30,11 +30,10 @@ export type ReactflowLayoutConfig = {
    */
   reverseSourceHandles: boolean;
   /**
-   * show stats on graph
+   * anti-patterns show toggles on graph
    */
-  showStats: {
-    bottleneck: boolean,
-    godClasses: boolean;
+  toggles: {
+    [key: string]: boolean;
   };
 };
 
@@ -59,10 +58,7 @@ export const kDefaultLayoutConfig: ReactflowLayoutConfig = {
   visibility: "visible",
   spacing: { x: 120, y: 120 },
   reverseSourceHandles: false,
-  showStats: {
-    bottleneck: false,
-    godClasses: false
-  }
+  toggles: {}
 };
 
 export type LayoutAlgorithms =

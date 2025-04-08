@@ -1,5 +1,9 @@
 import { lastOf } from "@/utils/base";
 import { Data, Reactflow, ReactflowNodeWithData, Workflow } from "./types";
+import { getGroupNodes } from "@/data-convert/get-group-nodes.ts";
+import { ReactflowLayoutConfig } from "@/layout/node";
+import { getActiveAntiPatternToggleNames } from "@/data-convert/get-active-anti-pattern-toggle-names.ts";
+import { getParentIdOfNode } from "@/data-convert/get-parent-id-of-node.ts";
 
 export const convertData2Workflow = ( data: Data ): Workflow => {
   const edgesCount: Record<string, number> = {};
@@ -32,7 +36,10 @@ export const convertData2Workflow = ( data: Data ): Workflow => {
   }
 }
 
-export const workflow2reactflow = ( workflow: Workflow ): Reactflow => {
+export const workflow2reactflow = ( { workflow, config }: {
+  workflow: Workflow,
+  config: ReactflowLayoutConfig
+} ): Reactflow => {
   const { nodes = [], edges = [], analysis } = workflow ?? {};
   const edgesCount: Record<string, number> = {};
   const edgesIndex: Record<string, { source: number; target: number }> = {};
@@ -79,21 +86,41 @@ export const workflow2reactflow = ( workflow: Workflow ): Reactflow => {
     }
   }
 
-  return {
-    nodes: nodes.reduce(( acc, node ) => {
-      const stats = {
-        bottleneckPercent: workflow.showStats?.bottleneck && analysis.bottlenecks && node.id in analysis.bottlenecks ? analysis.bottlenecks[node.id] : void 0,
-        godClassesPercent: workflow.showStats?.godClasses && analysis.godClasses && node.id in analysis.godClasses ? analysis.godClasses[node.id] : void 0,
-      }
-      const label = Object.entries(stats).reduce(( acc, curVal ) => curVal[1] ? acc += `${ curVal[0] }: ${ curVal[1] }%\n` : '', '')
+  const activeAntiPatternToggleNames = getActiveAntiPatternToggleNames(config.toggles)
 
-      let parentId = void 0
-      if ( node.id in analysis.bottlenecks ) {
-        parentId = 'bottleneck'
-      } else if ( node.id in analysis.godClasses ) {
-        parentId = 'godClasses'
-      }
-      if ( workflow.showStats !== void 0 && Object.keys(workflow.showStats).length > 0 && !(Object.keys(workflow.showStats).includes(node.id)) && Object.values(stats).every(x => x === void 0) ) {
+  const nodeMetrics = Object.entries(analysis).reduce(( acc, [ antipatternName, data ] ) => {
+    if ( typeof data === 'object' && typeof Object.values(data)[0] === 'number' && activeAntiPatternToggleNames.includes(antipatternName) ) {
+      return { ...acc, [antipatternName]: data }
+    }
+    return acc
+  }, {})
+
+  const parentIds = Array.from(new Set(nodes.map(( node ) => getParentIdOfNode({ node, nodeMetrics }))))
+
+  const groupNodes = getGroupNodes({ activeToggles: activeAntiPatternToggleNames, parentIds })
+
+  return {
+    nodes: groupNodes.concat(nodes.filter(node => getParentIdOfNode({ node, nodeMetrics })).reduce(( acc, node ) => {
+      const stats = activeAntiPatternToggleNames.reduce(( acc, cur ) => {
+        console.log('cur', cur)
+        console.log('analysis[cur]', analysis[cur])
+        console.log('node.id', node.id)
+        if ( analysis[cur] && node.id in analysis[cur] ) {
+          console.log('analysis[cur][node.id]', analysis[cur][node.id])
+          return { ...acc, [cur]: analysis[cur] }
+        }
+        return acc
+      }, {})
+
+      console.log('stats', stats)
+
+      // const label = Object.entries(stats).reduce(( acc, curVal ) => {
+      //   if ( curVal[1] ) {
+      //     return acc += `${ curVal[0] }: ${ Number(curVal[1]) * 100 }%`
+      //   }
+      //   return acc
+      // }, '')
+      if ( workflow.toggles !== void 0 && Object.keys(workflow.toggles).length > 0 && !(Object.keys(workflow.toggles).includes(node.id)) && Object.values(stats).every(x => x === void 0) ) {
         return acc
       }
       acc.push({
@@ -102,16 +129,15 @@ export const workflow2reactflow = ( workflow: Workflow ): Reactflow => {
           ...node,
           sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
           targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
-          ...stats,
-          tooltip: { label: label ? label : void 0 },
+          // tooltip: { label: label ? label : void 0 },
         },
         position: { x: 0, y: 0 },
-        parentId,
+        parentId: getParentIdOfNode({ node, nodeMetrics }) ?? void 0,
         type: node.type,
-        extent: node.id in analysis.bottlenecks || node.id in analysis.godClasses ? 'parent' : void 0,
+        extent: node.type === 'base' ? 'parent' : void 0,
       })
       return acc
-    }, [] as ReactflowNodeWithData[]) ?? [],
+    }, [] as ReactflowNodeWithData[]) ?? []) ?? [],
     edges: edges.map(( edge ) => ({
       ...edge,
       data: {
@@ -131,5 +157,6 @@ export const workflow2reactflow = ( workflow: Workflow ): Reactflow => {
         },
       },
     })),
+    toggleNames: Object.keys(analysis)
   };
 };

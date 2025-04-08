@@ -1,7 +1,7 @@
 import dagre from "@dagrejs/dagre";
 import { getIncomers } from "@xyflow/react";
 
-import { ReactflowNodeWithData } from "@/data/types";
+import { ReactflowNodeWithData } from "@/data-convert/types.ts";
 import { LayoutAlgorithm } from "..";
 import { getEdgeLayouted, getNodeLayouted, getNodeSize } from "../../metadata";
 

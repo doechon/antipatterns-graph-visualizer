@@ -1,17 +1,10 @@
 import { Edge, Node, NodeToolbarProps, XYPosition } from "@xyflow/react";
 
-import { ControlPoint } from "../layout/edge/point";
-import { ReactflowLayoutConfig } from "@/layout/node";
+import { ControlPoint } from "../layout/edge/point.ts";
 
 
 interface Analysis {
-  bottlenecks: {
-    [key: string]: number
-  },
-  godClasses: {
-    [key: string]: number
-  },
-  cycles: string[][];
+  [key: string]: string[][] | { [key: string]: string[] } | { [key: string]: number };
 }
 
 export interface Data {
@@ -43,7 +36,6 @@ export interface Workflow {
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
   analysis: Analysis;
-  showStats: ReactflowLayoutConfig['showStats']
 }
 
 export type ReactflowNode<
@@ -133,4 +125,5 @@ export type ReactflowEdgeWithData = ReactflowEdge<ReactflowEdgeData>;
 export interface Reactflow {
   nodes: ReactflowNodeWithData[];
   edges: ReactflowEdgeWithData[];
+  toggleNames: string[]
 }

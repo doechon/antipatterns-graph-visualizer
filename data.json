@@ -8,9 +8,7 @@
     },
     "cycles": [
       [
-        "org.springframework.samples.petclinic.customers.model.Owner"
-      ],
-      [
+        "org.springframework.samples.petclinic.customers.model.Owner",
         "org.springframework.samples.petclinic.customers.model.Pet"
       ]
     ],
@@ -65,23 +63,12 @@
       "org.springframework.samples.petclinic.api.application.WebClient.Builder": 0.01,
       "org.springframework.samples.petclinic.visits.model.Visit": 0.01,
       "org.springframework.samples.petclinic.api.boundary.web.ResponseEntity\u003cString\u003e": 0.01,
-      "org.springframework.samples.petclinic.vets.web.VetRepository": 0.01
+      "org.springframework.samples.petclinic.vets.web.VetRepository": 0.01,
+      "org.springframework.samples.petclinic.customers.model.Pet": 0.01
     }
   },
   "dependencyGraph": {
     "nodes": [
-      {
-        "id": "bottleneck",
-        "type": "group"
-      },
-      {
-        "id": "godClasses",
-        "type": "group"
-      },
-      {
-        "id": "cycle",
-        "type": "group"
-      },
       {
         "id": "org.springframework.samples.petclinic.config.PetclinicConfigServerApplicationTests",
         "type": "class"

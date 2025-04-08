@@ -1,7 +1,7 @@
 import type { useStoreApi } from "@xyflow/react";
 import { ReactFlowInstance } from "@xyflow/react";
 
-import { ReactflowEdgeWithData, ReactflowNodeWithData } from "../data/types";
+import { ReactflowEdgeWithData, ReactflowNodeWithData } from "../data-convert/types.ts";
 
 export const kReactflow: {
   instance?: ReactFlowInstance;

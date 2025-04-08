@@ -3,7 +3,7 @@
 import { type HierarchyPointNode, stratify, tree } from "d3-hierarchy";
 import { getIncomers, type Node } from "@xyflow/react";
 
-import { ReactflowNodeWithData } from "@/data/types";
+import { ReactflowNodeWithData } from "@/data-convert/types.ts";
 import { LayoutAlgorithm } from "..";
 import { getEdgeLayouted, getNodeLayouted, getNodeSize } from "../../metadata";
 

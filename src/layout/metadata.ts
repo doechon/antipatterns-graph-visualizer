@@ -1,6 +1,6 @@
 import { MarkerType, Position } from "@xyflow/react";
 
-import { Reactflow, ReactflowEdgeWithData, ReactflowNodeWithData, } from "../data/types";
+import { Reactflow, ReactflowEdgeWithData, ReactflowNodeWithData, } from "../data-convert/types.ts";
 import { kReactflow } from "../states/reactflow";
 import { LayoutDirection, LayoutVisibility } from "./node";
 

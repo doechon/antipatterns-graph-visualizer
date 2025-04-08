@@ -19,40 +19,55 @@ import { kEdgeTypes } from "./components/Edges";
 import { ColorfulMarkerDefinitions } from "./components/Edges/Marker";
 import { kNodeTypes } from "./components/Nodes";
 import { ReactflowInstance } from "./components/ReactflowInstance";
-import defaultWorkflow from "./data/data.json";
-import { convertData2Workflow, workflow2reactflow } from "./data/convert";
+import defaultWorkflow from "../data.json";
+import { convertData2Workflow, workflow2reactflow } from "./data-convert";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "./layout/node";
 import { useAutoLayout } from "./layout/useAutoLayout";
 
 const EditWorkFlow = () => {
-  const [ nodes, _setNodes, onNodesChange ] = useNodesState([]);
+  const [ nodes, setNodes, onNodesChange ] = useNodesState([]);
   const [ edges, _setEdges, onEdgesChange ] = useEdgesState([]);
+  const [ toggleNames, setToggleNames ] = useNodesState([]);
+
 
   const { layout, layouting } = useAutoLayout();
 
   const layoutReactflow = async (
-    props: ReactflowLayoutConfig & {
+    props:
+      ReactflowLayoutConfig & {
       workflow: string;
     }
   ) => {
     if ( layouting ) {
       return;
     }
-
-    const input = props.workflow;
-    const data = jsonDecode(input);
+    const { workflow, ...config } = props;
+    const data = jsonDecode(workflow);
     if ( !data ) {
       alert("Invalid workflow JSON data");
       return;
     }
-    const workflow = workflow2reactflow({ ...data, ...props });
-    await layout({ ...workflow, ...props });
+
+    const reactflow = workflow2reactflow({ workflow: data, config });
+    await layout({ ...reactflow, ...props });
   };
 
   useEffect(() => {
-    const { nodes, edges } = workflow2reactflow(convertData2Workflow(defaultWorkflow as any));
-    layout({ nodes, edges, ...kDefaultLayoutConfig });
+    const {
+      nodes,
+      edges,
+      toggleNames
+    } = workflow2reactflow({
+      workflow: convertData2Workflow(defaultWorkflow as any),
+      config: kDefaultLayoutConfig
+    });
+    setToggleNames(toggleNames)
+    layout({ nodes, edges, ...kDefaultLayoutConfig, toggleNames });
   }, []);
+
+  if ( toggleNames.length === 0 ) {
+    return null;
+  }
 
   return (
     <div
@@ -83,7 +98,7 @@ const EditWorkFlow = () => {
           maskStrokeColor="black"
           maskStrokeWidth={ 10 }
         />
-        <ControlPanel layoutReactflow={ layoutReactflow }/>
+        <ControlPanel layoutReactflow={ layoutReactflow } toggleNames={ toggleNames }/>)
       </ReactFlow>
     </div>
   );

@@ -3,7 +3,7 @@ import "./styles.css";
 import { ComponentType, memo, useState } from "react";
 import { Handle, NodeProps, NodeResizeControl, NodeToolbar, Position } from "@xyflow/react";
 
-import { ReactflowNodeData } from "@/data/types";
+import { ReactflowNodeData } from "@/data-convert/types.ts";
 import { kReactflowLayoutConfig } from "@/components/ControlPanel";
 import { cn } from "@/lib/utils.ts";
 
@@ -26,6 +26,12 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
 
     return (
       <div
+        ref={ ( ref ) => {
+          if ( ref ) {
+            ref.parentElement!.style.width = `${ data?.width }px`
+            ref.parentElement!.style.height = `${ data?.height }px`
+          }
+        } }
         className={ cn(
           "relative rounded-md border bg-card p-5 text-card-foreground",
           "hover:ring-1",

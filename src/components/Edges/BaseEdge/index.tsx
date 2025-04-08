@@ -1,7 +1,7 @@
 import { ComponentType, memo } from "react";
 import { BaseEdge as _BaseEdge, EdgeProps } from "@xyflow/react";
 
-import { ReactflowEdgeWithData } from "@/data/types";
+import { ReactflowEdgeWithData } from "@/data-convert/types.ts";
 import { isConnectionBackward } from "@/layout/edge/edge";
 import { getEdgeStyles, layoutEdge } from "@/layout/edge/style";
 import { kReactflow } from "@/states/reactflow";

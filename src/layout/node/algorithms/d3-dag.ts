@@ -1,7 +1,7 @@
 import { graphStratify, sugiyama } from "d3-dag";
 import { getIncomers, type Node } from "@xyflow/react";
 
-import { ReactflowNodeWithData } from "@/data/types";
+import { ReactflowNodeWithData } from "@/data-convert/types.ts";
 import { LayoutAlgorithm, LayoutAlgorithmProps } from "..";
 import { getEdgeLayouted, getNodeLayouted, getNodeSize } from "../../metadata";
 

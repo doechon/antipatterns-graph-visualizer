@@ -1,8 +1,9 @@
 import { button, Leva, useControls } from "leva";
-import defaultWorkflow from "../data/data.json";
+import defaultWorkflow from "../../data.json";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "../layout/node";
 import { jsonEncode } from "@/utils/base";
-import { convertData2Workflow } from "@/data/convert.ts";
+import { convertData2Workflow } from "@/data-convert";
+import { useMemo } from "react";
 
 export const kReactflowLayoutConfig: {
   setState: any;
@@ -61,8 +62,19 @@ const reverseSourceHandles = Object.entries({
 );
 
 
-export const ControlPanel = ( props: { layoutReactflow: any } ) => {
-  const { layoutReactflow } = props;
+export const ControlPanel = ( props: { layoutReactflow: any, toggleNames?: string[] } ) => {
+  const { layoutReactflow, toggleNames } = props;
+
+  const toggleControls = useMemo(() => toggleNames?.reduce(( prev, cur, ind ) => ({
+      ...prev,
+      [cur]: {
+        order: 5 + ind,
+        label: cur,
+        options: [ true, false ],
+        value: false,
+      }
+    }), {}), [ toggleNames ]
+  )
 
   const [ state, setState ] = useControls(() => {
     return {
@@ -87,20 +99,9 @@ export const ControlPanel = ( props: { layoutReactflow: any } ) => {
         label: "Order",
         options: reverseSourceHandles,
       },
-      bottleneck: {
-        order: 5,
-        label: "Bottleneck",
-        options: [ true, false ],
-        value: false,
-      },
-      godClasses: {
-        order: 6,
-        label: "GodClasses",
-        options: [ true, false ],
-        value: false,
-      },
+      ...toggleControls,
       layout: {
-        order: 7,
+        order: 4 + Object.keys(toggleControls).length + 1,
         label: "Layout",
         ...button(( get ) => {
           layoutReactflow({
@@ -109,10 +110,7 @@ export const ControlPanel = ( props: { layoutReactflow: any } ) => {
             direction: get("direction"),
             spacing: get("spacing"),
             reverseSourceHandles: false,
-            showStats: {
-              bottleneck: get("bottleneck"),
-              godClasses: get("godClasses")
-            }
+            toggles: Object.keys(toggleControls).map(toggleName => ({ [toggleName]: get(toggleName) })),
           });
         }),
       },
