@@ -6,8 +6,6 @@ export const getGroupNodes = ( { activeToggles, parentIds }: {
   parentIds: string[]
 } ): ReactflowNodeWithData[] => {
 
-  console.log('parentIds', parentIds)
-
   const allSubsetsOfNodeGroupNames = activeToggles.reduce(
     ( subsets, value ) => subsets.concat(
       subsets.map(set => [ value, ...set ])
@@ -17,7 +15,6 @@ export const getGroupNodes = ( { activeToggles, parentIds }: {
     .filter(groupName => groupName && parentIds.includes(groupName))
     .sort(( x, y ) => y.length - x.length);
 
-  console.log('allSubsetsOfNodeGroupNames', allSubsetsOfNodeGroupNames)
 
   const greatNodeGroupName = allSubsetsOfNodeGroupNames[0];
 

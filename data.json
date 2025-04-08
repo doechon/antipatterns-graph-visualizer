@@ -1,10 +1,21 @@
 {
   "architectureAnalysis": {
-    "chattyServices": {},
+    "godClasses": {
+      "org.springframework.samples.petclinic.api.application.WebClient.Builder": 0.01,
+      "org.springframework.samples.petclinic.visits.model.Visit": 0.01,
+      "org.springframework.samples.petclinic.api.boundary.web.ResponseEntity\u003cString\u003e": 0.01,
+      "org.springframework.samples.petclinic.vets.web.VetRepository": 0.01,
+      "org.springframework.samples.petclinic.customers.model.Pet": 0.01
+    },
     "bottlenecks": {
       "org.springframework.samples.petclinic.api.application.VisitsServiceClient": 1,
       "org.springframework.samples.petclinic.customers.model.Pet": 0.5,
       "org.springframework.samples.petclinic.customers.model.Owner": 1
+    },
+    "3rd metric": {
+      "org.springframework.samples.petclinic.customers.model.Pet": 0.2,
+      "org.springframework.samples.petclinic.customers.model.PetType": 0.5,
+      "org.springframework.samples.petclinic.customers.model.Owner": 0.5
     },
     "cycles": [
       [
@@ -12,6 +23,7 @@
         "org.springframework.samples.petclinic.customers.model.Pet"
       ]
     ],
+    "chattyServices": {},
     "hubLikeDependencies": {},
     "serviceChains": {
       "org.springframework.samples.petclinic.customers.model.Owner": [
@@ -58,13 +70,6 @@
         "org.springframework.samples.petclinic.customers.model.List\u003cPet\u003e",
         "org.springframework.samples.petclinic.customers.model.Pet"
       ]
-    },
-    "godClasses": {
-      "org.springframework.samples.petclinic.api.application.WebClient.Builder": 0.01,
-      "org.springframework.samples.petclinic.visits.model.Visit": 0.01,
-      "org.springframework.samples.petclinic.api.boundary.web.ResponseEntity\u003cString\u003e": 0.01,
-      "org.springframework.samples.petclinic.vets.web.VetRepository": 0.01,
-      "org.springframework.samples.petclinic.customers.model.Pet": 0.01
     }
   },
   "dependencyGraph": {

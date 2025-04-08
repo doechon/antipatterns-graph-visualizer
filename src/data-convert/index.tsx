@@ -102,34 +102,37 @@ export const workflow2reactflow = ( { workflow, config }: {
   return {
     nodes: groupNodes.concat(nodes.filter(node => getParentIdOfNode({ node, nodeMetrics })).reduce(( acc, node ) => {
       const stats = activeAntiPatternToggleNames.reduce(( acc, cur ) => {
-        console.log('cur', cur)
-        console.log('analysis[cur]', analysis[cur])
-        console.log('node.id', node.id)
         if ( analysis[cur] && node.id in analysis[cur] ) {
-          console.log('analysis[cur][node.id]', analysis[cur][node.id])
-          return { ...acc, [cur]: analysis[cur] }
+          return { ...acc, [cur]: analysis[cur][node.id] }
         }
         return acc
       }, {})
 
-      console.log('stats', stats)
 
-      // const label = Object.entries(stats).reduce(( acc, curVal ) => {
-      //   if ( curVal[1] ) {
-      //     return acc += `${ curVal[0] }: ${ Number(curVal[1]) * 100 }%`
-      //   }
-      //   return acc
-      // }, '')
-      if ( workflow.toggles !== void 0 && Object.keys(workflow.toggles).length > 0 && !(Object.keys(workflow.toggles).includes(node.id)) && Object.values(stats).every(x => x === void 0) ) {
+      const nodeMetricArr = Object.values(stats)
+      let nodeMetricPercent = (nodeMetricArr.reduce(( a, b ) => a + b) / nodeMetricArr.length);
+
+      nodeMetricPercent = (Math.round(nodeMetricPercent * 100) / 100).toFixed(2);
+
+      let label = Object.entries(stats).reduce(( acc, curVal ) => {
+        if ( curVal[1] ) {
+          return acc += `${ curVal[0] }: ${ Number(curVal[1]) * 100 }%`
+        }
         return acc
+      }, '')
+
+      if ( nodeMetricArr.length > 1 ) {
+        label += `total ${ nodeMetricPercent * 100 }%`
       }
+
       acc.push({
         ...node,
         data: {
           ...node,
           sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
           targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
-          // tooltip: { label: label ? label : void 0 },
+          tooltip: { label: label ? label : void 0 },
+          nodeMetricPercent,
         },
         position: { x: 0, y: 0 },
         parentId: getParentIdOfNode({ node, nodeMetrics }) ?? void 0,

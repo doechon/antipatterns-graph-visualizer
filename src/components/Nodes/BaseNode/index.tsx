@@ -21,9 +21,12 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
 
     const handleBlur = () => setTooltipVisible(false);
 
-    const hslVal = 0.6 * data?.bottleneckPercent
+    console.log('data?.nodeMetricPercent', data?.nodeMetricPercent)
+    const hslVal = 0.6 * data?.nodeMetricPercent
+    console.log('hslVal', hslVal)
     const hsl = `hsl(0, ${ hslVal * 100 }%, ${ (1 - hslVal) * 100 }%)`
 
+    console.log('hsl', hsl)
     return (
       <div
         ref={ ( ref ) => {
@@ -41,7 +44,7 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         onMouseLeave={ () => setTooltipVisible(false) }
         onFocus={ handleFocus }
         onBlur={ handleBlur }
-        style={ data?.bottleneckPercent !== void 0 ? { background: `${ hsl }` } : {} }
+        style={ data?.nodeMetricPercent !== void 0 ? { background: `${ hsl }` } : {} }
       >
         <NodeResizeControl minWidth={ 100 } minHeight={ 50 }>
           <ResizeIcon/>

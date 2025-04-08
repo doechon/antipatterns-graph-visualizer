@@ -64,7 +64,7 @@ export type ReactflowNodeData = WorkflowNode & {
   /**
    * Bottleneck percent
    */
-  bottleneckPercent?: number
+  nodeMetricPercent?: number
 };
 
 export interface ReactflowEdgePort {
