@@ -169,18 +169,18 @@ export function getLabelPosition(
   points: ControlPoint[],
   minGap = 20
 ): XYPosition {
-  if ( points.length % 2 === 0 ) {
-    // Find the midpoint of the polyline
-    const middleP1 = points[points.length / 2 - 1];
-    const middleP2 = points[points.length / 2];
-    if ( distance(middleP1, middleP2) > minGap ) {
-      return getLineCenter(middleP1, middleP2);
-    }
-  }
+  // if ( points.length % 2 === 0 ) {
+  //   // Find the midpoint of the polyline
+  //   const middleP1 = points[points.length / 2 - 1];
+  //   const middleP2 = points[points.length / 2];
+  //   if ( distance(middleP1, middleP2) > minGap ) {
+  //     return getLineCenter(middleP1, middleP2);
+  //   }
+  // }
   const [ start, end ] = getLongestLine(points);
   return {
-    x: (start.x + end.x) / 2,
-    y: (start.y + end.y) / 2,
+    x: end.x,
+    y: end.y,
   };
 }
 

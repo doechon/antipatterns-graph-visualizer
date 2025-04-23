@@ -6,6 +6,7 @@ import { Handle, NodeProps, NodeResizeControl, NodeToolbar, Position } from "@xy
 import { ReactflowNodeData } from "@/data-convert/types.ts";
 import { kReactflowLayoutConfig } from "@/components/ControlPanel";
 import { cn } from "@/lib/utils.ts";
+import { getShortNodeName } from "@/data-convert/get-short-node-name.ts";
 
 export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?: string }> = memo(
   ( { className, data } ) => {
@@ -15,18 +16,17 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
     const sourceHandlesFlexDirection: any =
       targetHandlesFlexDirection + (reverseSourceHandles ? "-reverse" : "");
 
+    const [ nodeId, setNodeId ] = useState(getShortNodeName(data.id))
+
     const [ isTooltipVisible, setTooltipVisible ] = useState(false);
 
     const handleFocus = () => setTooltipVisible(true);
 
     const handleBlur = () => setTooltipVisible(false);
 
-    console.log('data?.nodeMetricPercent', data?.nodeMetricPercent)
     const hslVal = 0.6 * data?.nodeMetricPercent
-    console.log('hslVal', hslVal)
     const hsl = `hsl(0, ${ hslVal * 100 }%, ${ (1 - hslVal) * 100 }%)`
 
-    console.log('hsl', hsl)
     return (
       <div
         ref={ ( ref ) => {
@@ -40,8 +40,14 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
           "hover:ring-1",
           className
         ) }
-        onMouseEnter={ () => setTooltipVisible(true) }
-        onMouseLeave={ () => setTooltipVisible(false) }
+        onMouseEnter={ () => {
+          setTooltipVisible(true)
+          // setNodeId(data?.id)
+        } }
+        onMouseLeave={ () => {
+          setTooltipVisible(false)
+          // setNodeId(getShortNodeName(data.id))
+        } }
         onFocus={ handleFocus }
         onBlur={ handleBlur }
         style={ data?.nodeMetricPercent !== void 0 ? { background: `${ hsl }` } : {} }
@@ -63,9 +69,9 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         }
         <div
           className={ `handles handles-${ direction } targets` }
-          style={ {
-            flexDirection: targetHandlesFlexDirection,
-          } }
+          // style={ {
+          //   flexDirection: targetHandlesFlexDirection,
+          // } }
         >
           { data?.targetHandles.map(( id ) => (
             <Handle
@@ -73,16 +79,20 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
               key={ id }
               id={ id }
               type="target"
-              position={ isHorizontal ? Position.Left : Position.Top }
+              position={ Position.Top }
+              // position={ isHorizontal ? Position.Left : Position.Top }
             />
           )) }
         </div>
-        <div className="label">{ data?.id }</div>
+        <div className="label">
+          <div>{ nodeId }</div>
+          <div>{ data?.tooltip?.label }</div>
+        </div>
         <div
           className={ `handles handles-${ direction } sources` }
-          style={ {
-            flexDirection: sourceHandlesFlexDirection,
-          } }
+          // style={ {
+          //   flexDirection: sourceHandlesFlexDirection,
+          // } }
         >
           { data?.sourceHandles.map(( id ) => (
             <Handle
@@ -90,7 +100,8 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
               key={ id }
               id={ id }
               type="source"
-              position={ isHorizontal ? Position.Right : Position.Bottom }
+              position={ Position.Bottom }
+              // position={ isHorizontal ? Position.Right : Position.Bottom }
             />
           )) }
         </div>

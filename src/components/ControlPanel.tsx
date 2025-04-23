@@ -70,8 +70,7 @@ export const ControlPanel = ( props: { layoutReactflow: any, toggleNames?: strin
       [cur]: {
         order: 5 + ind,
         label: cur,
-        options: [ true, false ],
-        value: false,
+        value: false
       }
     }), {}), [ toggleNames ]
   )

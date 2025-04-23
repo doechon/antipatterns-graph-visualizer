@@ -51,7 +51,7 @@ export const BaseEdge: ComponentType<EdgeProps<ReactflowEdgeWithData>> = memo(
 
     const edge: ReactflowEdgeWithData = kReactflow.instance!.getEdge(id)!;
 
-    const offset = 20;
+    const offset = 10;
     const borderRadius = 12;
     const handlerWidth = 24;
     const handlerThickness = 6;

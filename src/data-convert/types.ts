@@ -3,8 +3,8 @@ import { Edge, Node, NodeToolbarProps, XYPosition } from "@xyflow/react";
 import { ControlPoint } from "../layout/edge/point.ts";
 
 
-interface Analysis {
-  [key: string]: string[][] | { [key: string]: string[] } | { [key: string]: number };
+export interface Analysis {
+  [key: string]: { [key: string]: string[] } | { [key: string]: number };
 }
 
 export interface Data {
@@ -28,6 +28,7 @@ interface WorkflowEdge {
   id: string;
   source: string;
   target: string;
+  type: string;
   sourceHandle: string;
   targetHandle: string;
 }

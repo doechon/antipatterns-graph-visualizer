@@ -1,13 +1,13 @@
 import { areLinesSameDirection, isHorizontalFromPosition } from "../edge";
 import {
   ControlPoint,
-  HandlePosition,
-  NodeRect,
   getCenterPoints,
   getExpandedRect,
   getOffsetPoint,
   getSidesFromPoints,
   getVerticesFromRectVertex,
+  HandlePosition,
+  NodeRect,
   optimizeInputPoints,
   reducePoints,
 } from "../point";
@@ -30,13 +30,13 @@ export interface GetControlPointsParams {
  *
  * Reference article: https://juejin.cn/post/6942727734518874142
  */
-export const getControlPoints = ({
-  source: oldSource,
-  target: oldTarget,
-  sourceRect,
-  targetRect,
-  offset = 20,
-}: GetControlPointsParams) => {
+export const getControlPoints = ( {
+                                    source: oldSource,
+                                    target: oldTarget,
+                                    sourceRect,
+                                    targetRect,
+                                    offset = 0,
+                                  }: GetControlPointsParams ) => {
   const source: ControlPoint = oldSource;
   const target: ControlPoint = oldTarget;
   let edgePoints: ControlPoint[] = [];
@@ -70,7 +70,7 @@ export const getControlPoints = ({
     ? isSameDirection && source.x < target.x
     : isSameDirection && source.y < target.y;
 
-  if (isTooClose || isDirectConnect) {
+  if ( isTooClose || isDirectConnect ) {
     // 3. If the two Rects are relatively close or directly connected, return a simple Path
     edgePoints = getSimplePath({
       source,
@@ -121,7 +121,7 @@ export const getControlPoints = ({
   }
 
   return {
-    points: reducePoints([optimized.source, ...edgePoints, optimized.target]),
+    points: reducePoints([ optimized.source, ...edgePoints, optimized.target ]),
     inputPoints: optimized.edgePoints,
   };
 };
