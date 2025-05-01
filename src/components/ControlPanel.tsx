@@ -1,5 +1,5 @@
 import { button, Leva, useControls } from "leva";
-import defaultWorkflow from "../../data.json";
+import defaultWorkflow from "../../data-short.json";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "../layout/node";
 import { jsonEncode } from "@/utils/base";
 import { convertData2Workflow } from "@/data-convert";

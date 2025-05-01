@@ -93,7 +93,7 @@ export const BaseEdge: ComponentType<EdgeProps<ReactflowEdgeWithData>> = memo(
             strokeWidth: selected ? 2 : 1.5,
             strokeDasharray: edgeType === "dashed" ? "10,10" : undefined,
           } }
-          markerEnd={ `url('#${ color.replace("#", "") }')` }
+          markerEnd={ `url('${ color }')` }
           markerStart={ markerStart }
           interactionWidth={ interactionWidth }
         />

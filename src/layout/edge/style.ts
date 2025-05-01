@@ -29,7 +29,7 @@ export const getEdgeStyles = ( props: {
   const idx = parseInt(lastOf(id.split("#")) ?? "0", 10);
   if ( isBackward ) {
     // Use dashed lines to distinguish the edges when the connection line goes backward or connects to a hub Node
-    return { color: kNoMarkerColor, edgeType: "dashed", pathType: "base" };
+    return { color: kNoMarkerColor, edgeType: "solid", pathType: "base" };
   }
   const edge: ReactflowEdgeWithData = kReactflow.instance!.getEdge(id)!;
   if ( edge.data!.targetPort.edges > 2 ) {

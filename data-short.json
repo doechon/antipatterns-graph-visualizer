@@ -3,8 +3,7 @@
     "Cycles": {
       "cycle 1": [
         "Owner",
-        "Pet",
-        "Owner"
+        "Pet"
       ]
     },
     "God classes": {

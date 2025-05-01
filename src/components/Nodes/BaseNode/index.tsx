@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils.ts";
 import { getShortNodeName } from "@/data-convert/get-short-node-name.ts";
 
 export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?: string }> = memo(
-  ( { className, data } ) => {
+  ( { className, data }: NodeProps<ReactflowNodeData> & { className?: string } ) => {
     const { direction, reverseSourceHandles } = kReactflowLayoutConfig.state;
     const isHorizontal = direction === "horizontal";
     const targetHandlesFlexDirection: any = isHorizontal ? "column" : "row";
@@ -69,9 +69,6 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         }
         <div
           className={ `handles handles-${ direction } targets` }
-          // style={ {
-          //   flexDirection: targetHandlesFlexDirection,
-          // } }
         >
           { data?.targetHandles.map(( id ) => (
             <Handle
@@ -90,9 +87,6 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         </div>
         <div
           className={ `handles handles-${ direction } sources` }
-          // style={ {
-          //   flexDirection: sourceHandlesFlexDirection,
-          // } }
         >
           { data?.sourceHandles.map(( id ) => (
             <Handle

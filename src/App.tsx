@@ -19,7 +19,7 @@ import { kEdgeTypes } from "./components/Edges";
 import { ColorfulMarkerDefinitions } from "./components/Edges/Marker";
 import { kNodeTypes } from "./components/Nodes";
 import { ReactflowInstance } from "./components/ReactflowInstance";
-import defaultWorkflow from "../data.json";
+import defaultWorkflow from "../data-short.json";
 import { convertData2Workflow, workflow2reactflow } from "./data-convert";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "./layout/node";
 import { useAutoLayout } from "./layout/useAutoLayout";
