@@ -37,6 +37,11 @@
         "target": "Pet"
       },
       {
+        "source": "Owner",
+        "type": "method_return_3",
+        "target": "Pet"
+      },
+      {
         "source": "Pet",
         "type": "field",
         "target": "Owner"
@@ -44,6 +49,11 @@
       {
         "source": "Pet",
         "type": "field 2",
+        "target": "Owner"
+      },
+      {
+        "source": "Pet",
+        "type": "field 3",
         "target": "Owner"
       }
     ]

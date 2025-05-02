@@ -6,16 +6,17 @@ import { getActiveAntiPatternToggleNames } from "@/data-convert/get-active-anti-
 import { getParentIdOfNode } from "@/data-convert/get-parent-id-of-node.ts";
 
 export const convertData2Workflow = ( data: Data ): Workflow => {
-  const edgesCount: Record<string, number> = {};
+  const baseEdgesCount: Record<string, number> = {};
   const preparedEdges: Workflow['edges'] = []
+
   for ( const edge of data["dependencyGraph"]['edges'] ) {
     const edgeId = `${ edge.source }#${ edge.target }`
-    if ( !edgesCount[edgeId] ) {
-      edgesCount[edgeId] = 1
+    if ( !baseEdgesCount[edgeId] ) {
+      baseEdgesCount[edgeId] = 1
     } else {
-      edgesCount[edgeId]++
+      baseEdgesCount[edgeId]++
     }
-    const count = edgesCount[edgeId]
+    const count = baseEdgesCount[edgeId]
     preparedEdges.push({
       id: `${ edgeId }#${ count }`,
       source: edge.source,
@@ -26,23 +27,6 @@ export const convertData2Workflow = ( data: Data ): Workflow => {
     })
   }
 
-  return {
-    nodes: data["dependencyGraph"]['nodes'].map(node => {
-      return ({
-        id: node.id,
-        type: [ 'group' ].includes(node.type) ? node.type : 'base'
-      })
-    }),
-    edges: preparedEdges,
-    analysis: data["architectureAnalysis"]
-  }
-}
-
-export const workflow2reactflow = ( { workflow, config }: {
-  workflow: Workflow,
-  config: ReactflowLayoutConfig
-} ): Reactflow => {
-  const { nodes = [], edges = [], analysis } = workflow ?? {};
   const edgesCount: Record<string, number> = {};
   const edgesIndex: Record<string, { source: number; target: number }> = {};
   const nodeHandles: Record<
@@ -53,7 +37,7 @@ export const workflow2reactflow = ( { workflow, config }: {
     }
   > = {};
 
-  for ( const edge of edges ) {
+  for ( const edge of preparedEdges ) {
     const { source, target, sourceHandle, targetHandle } = edge;
     for ( const i of [ sourceHandle, targetHandle, `source-${ source }`, `target-${ target }` ] ) {
       if ( !edgesCount[i] ) {
@@ -87,7 +71,50 @@ export const workflow2reactflow = ( { workflow, config }: {
       nodeHandles[target].targetHandles[targetHandle] += 1;
     }
   }
+  console.log('nodeHandles', nodeHandles)
+  console.log('edgesCount', edgesCount)
+  console.log('edgesIndex', edgesIndex)
 
+  return {
+    nodes: data["dependencyGraph"]['nodes'].map(node => {
+      return ({
+        id: node.id,
+        type: [ 'group' ].includes(node.type) ? node.type : 'base',
+        sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
+        targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
+      })
+    }),
+    edges: preparedEdges.map(( edge ) => ({
+      ...edge,
+      label: edge.type,
+      data: {
+        sourcePort: {
+          edges: edgesCount[`source-${ edge.source }`],
+          portIndex: parseInt(lastOf(edge.sourceHandle.split("#"))!, 10),
+          portCount: Object.keys(nodeHandles[edge.source].sourceHandles).length,
+          edgeIndex: edgesIndex[edge.id].source,
+          edgeCount: edgesCount[edge.sourceHandle],
+        },
+        targetPort: {
+          edges: edgesCount[`target-${ edge.target }`],
+          portIndex: parseInt(lastOf(edge.targetHandle.split("#"))!, 10),
+          portCount: Object.keys(nodeHandles[edge.target].targetHandles).length,
+          edgeIndex: edgesIndex[edge.id].target,
+          edgeCount: edgesCount[edge.targetHandle],
+        },
+      },
+    }))
+    ,
+    analysis: data["architectureAnalysis"]
+  }
+}
+
+export const workflow2reactflow = ( { workflow, config }: {
+  workflow: Workflow,
+  config: ReactflowLayoutConfig
+} ): Reactflow => {
+  const { nodes = [], edges = [], analysis } = workflow ?? {};
+  console.log('nodes', nodes)
   let activeAntiPatternToggleNames = getActiveAntiPatternToggleNames(config.toggles)
 
   const nodeMetrics = Object.entries(analysis).reduce(( acc, [ antipatternName, data ] ) => {
@@ -145,8 +172,6 @@ export const workflow2reactflow = ( { workflow, config }: {
         ...node,
         data: {
           ...node,
-          sourceHandles: Object.keys(nodeHandles[node.id]?.sourceHandles ?? []),
-          targetHandles: Object.keys(nodeHandles[node.id]?.targetHandles ?? []),
           tooltip: { label: label ? label : void 0 },
           nodeMetricPercent,
         },
@@ -157,26 +182,7 @@ export const workflow2reactflow = ( { workflow, config }: {
       })
       return acc
     }, [] as ReactflowNodeWithData[]) ?? []) ?? [],
-    edges: edges.map(( edge ) => ({
-      ...edge,
-      label: edge.type,
-      data: {
-        sourcePort: {
-          edges: edgesCount[`source-${ edge.source }`],
-          portIndex: parseInt(lastOf(edge.sourceHandle.split("#"))!, 10),
-          portCount: Object.keys(nodeHandles[edge.source].sourceHandles).length,
-          edgeIndex: edgesIndex[edge.id].source,
-          edgeCount: edgesCount[edge.sourceHandle],
-        },
-        targetPort: {
-          edges: edgesCount[`target-${ edge.target }`],
-          portIndex: parseInt(lastOf(edge.targetHandle.split("#"))!, 10),
-          portCount: Object.keys(nodeHandles[edge.target].targetHandles).length,
-          edgeIndex: edgesIndex[edge.id].target,
-          edgeCount: edgesCount[edge.targetHandle],
-        },
-      },
-    })),
+    edges,
     toggleNames: Object.keys(analysis)
   };
 };
