@@ -4,6 +4,7 @@ import { getGroupNodes } from "@/data-convert/get-group-nodes.ts";
 import { ReactflowLayoutConfig } from "@/layout/node";
 import { getActiveAntiPatternToggleNames } from "@/data-convert/get-active-anti-pattern-toggle-names.ts";
 import { getParentIdOfNode } from "@/data-convert/get-parent-id-of-node.ts";
+import { isEmpty } from 'lodash'
 
 export const convertData2Workflow = ( data: Data ): Workflow => {
   const baseEdgesCount: Record<string, number> = {};
@@ -113,26 +114,37 @@ export const workflow2reactflow = ( { workflow, config }: {
   let activeAntiPatternToggleNames = getActiveAntiPatternToggleNames(config.toggles)
 
   const nodeMetrics = Object.entries(analysis).reduce(( acc, [ antipatternName, data ] ) => {
-    if ( activeAntiPatternToggleNames.includes(antipatternName) && typeof data === 'object' && typeof Object.values(data)[0] === 'number' ) {
+    if ( typeof data === 'object' && typeof Object.values(data)[0] === 'number' ) {
       return { ...acc, [antipatternName]: data }
     }
     return acc
   }, {})
 
   const edgeHighlight = Object.entries(analysis).reduce(( acc, [ antipatternName, data ] ) => {
-    if ( activeAntiPatternToggleNames.includes(antipatternName) && typeof data === 'object' && Array.isArray(Object.values(data)[0]) ) {
-      return { ...acc, ...data }
+    if ( typeof data === 'object' && Array.isArray(Object.values(data)[0]) ) {
+      return { ...acc, [antipatternName]: data }
     }
     return acc
   }, {})
 
-  const activeAntiPatterns = Object.assign({}, nodeMetrics, edgeHighlight)
+  const notFoundAntiPatterns = Object.entries(analysis).reduce(( acc, [ antipatternName, data ] ) => {
+    if ( typeof data === 'object' && isEmpty(data) ) {
+      return { ...acc, [antipatternName]: data }
+    }
+    return acc
+  }, {})
+
+
+  console.log('nodeMetrics', nodeMetrics)
+
+  const activeAntiPatterns = Object.fromEntries(Object.entries(Object.assign({}, nodeMetrics, edgeHighlight)).filter((( [ antiPatternName ] ) => activeAntiPatternToggleNames.includes(antiPatternName))))
 
   activeAntiPatternToggleNames = Object.keys(activeAntiPatterns)
 
   const parentIds = Array.from(new Set(nodes.map(( node ) => getParentIdOfNode({ node, activeAntiPatterns }))))
 
   const groupNodes = getGroupNodes({ activeToggles: activeAntiPatternToggleNames, parentIds })
+
 
   return {
     nodes: groupNodes.concat(nodes.filter(node => getParentIdOfNode({
@@ -179,6 +191,20 @@ export const workflow2reactflow = ( { workflow, config }: {
       return acc
     }, [] as ReactflowNodeWithData[]) ?? []) ?? [],
     edges,
-    toggleNames: Object.keys(analysis)
+    toggleNames: Object.keys(analysis),
+    summary: {
+      nodeMetrics: Object.entries(nodeMetrics).map(( [ key, val ] ) => ({
+        antiPatternName: key,
+        value: Object.keys(val).length
+      })),
+      edgeHighlight: Object.entries(edgeHighlight).map(( [ key, val ] ) => ({
+        antiPatternName: key,
+        value: Object.keys(val).length
+      })),
+      notFoundAntiPatterns: Object.entries(notFoundAntiPatterns).map(( [ key, val ] ) => ({
+        antiPatternName: key,
+        value: Object.keys(val).length
+      })),
+    }
   };
 };

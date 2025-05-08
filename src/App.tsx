@@ -1,6 +1,6 @@
 import "@xyflow/react/dist/style.css";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Background,
   BackgroundVariant,
@@ -23,11 +23,13 @@ import defaultWorkflow from "../data.json";
 import { convertData2Workflow, workflow2reactflow } from "./data-convert";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "./layout/node";
 import { useAutoLayout } from "./layout/useAutoLayout";
+import { Summary, SummaryProps } from "@/components/Legend";
 
 const EditWorkFlow = () => {
   const [ nodes, setNodes, onNodesChange ] = useNodesState([]);
   const [ edges, _setEdges, onEdgesChange ] = useEdgesState([]);
   const [ toggleNames, setToggleNames ] = useNodesState([]);
+  const [ summary, setSummary ] = useState<SummaryProps | undefined>();
 
 
   const { layout, layouting } = useAutoLayout();
@@ -56,12 +58,14 @@ const EditWorkFlow = () => {
     const {
       nodes,
       edges,
-      toggleNames
+      toggleNames,
+      summary
     } = workflow2reactflow({
       workflow: convertData2Workflow(defaultWorkflow as any),
       config: kDefaultLayoutConfig
     });
     setToggleNames(toggleNames)
+    setSummary(summary)
     layout({ nodes, edges, ...kDefaultLayoutConfig, toggleNames });
   }, []);
 
@@ -79,6 +83,7 @@ const EditWorkFlow = () => {
         alignItems: "center",
       } }
     >
+      <Summary { ...summary }/>
       <ColorfulMarkerDefinitions/>
       <ReactFlow
         nodes={ nodes }

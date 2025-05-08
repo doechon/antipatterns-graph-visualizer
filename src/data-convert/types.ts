@@ -1,6 +1,7 @@
 import { Edge, Node, NodeToolbarProps, XYPosition } from "@xyflow/react";
 
 import { ControlPoint } from "../layout/edge/point.ts";
+import { SummaryProps } from "@/components/Legend";
 
 
 export interface Analysis {
@@ -131,4 +132,5 @@ export interface Reactflow {
   nodes: ReactflowNodeWithData[];
   edges: ReactflowEdgeWithData[];
   toggleNames: string[]
+  summary: SummaryProps
 }
