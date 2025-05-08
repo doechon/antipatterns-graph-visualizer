@@ -4,13 +4,13 @@ import { ComponentType, memo, useState } from "react";
 import { Handle, NodeProps, NodeResizeControl, NodeToolbar, Position } from "@xyflow/react";
 
 import { ReactflowNodeData } from "@/data-convert/types.ts";
-import { kReactflowLayoutConfig } from "@/components/ControlPanel";
 import { cn } from "@/lib/utils.ts";
 import { getShortNodeName } from "@/data-convert/get-short-node-name.ts";
+import { DiamondIcon, EqualIcon, Table2 } from "lucide-react";
 
 export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?: string }> = memo(
   ( { className, data }: NodeProps<ReactflowNodeData> & { className?: string } ) => {
-    const { direction, reverseSourceHandles } = kReactflowLayoutConfig.state;
+    const { direction, reverseSourceHandles } = { direction: "vertical", reverseSourceHandles: false };
     const isHorizontal = direction === "horizontal";
     const targetHandlesFlexDirection: any = isHorizontal ? "column" : "row";
     const sourceHandlesFlexDirection: any =
@@ -36,6 +36,7 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
           }
         } }
         className={ cn(
+          "border-[0.5px] overflow-hidden rounded-[4px] shadow-sm",
           "relative rounded-md border bg-card p-5 text-card-foreground",
           "hover:ring-1",
           className
@@ -52,9 +53,69 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         onBlur={ handleBlur }
         style={ data?.nodeMetricPercent !== void 0 ? { background: `${ hsl }` } : {} }
       >
+        <div
+          className="border-[0.5px] overflow-hidden rounded-[4px] shadow-sm"
+        >
+          <header
+            className={ cn(
+              'text-[0.55rem] pl-2 pr-1 bg-alternative text-default flex items-center justify-between',
+            ) }
+          >
+            <div className="flex gap-x-1 items-center">
+              <Table2 strokeWidth={ 1 } size={ 12 } className="text-light"/>
+              { nodeId }
+            </div>
+          </header>
+        </div>
+
         <NodeResizeControl minWidth={ 100 } minHeight={ 50 }>
           <ResizeIcon/>
         </NodeResizeControl>
+        { data?.stats?.map(( { antiPatternName, value } ) => (
+          <div
+            className={ cn(
+              'text-[8px] leading-5 relative flex flex-row justify-items-start',
+              'bg-surface-100',
+              'border-t',
+              'border-t-[0.5px]',
+              'hover:bg-scale-500 transition cursor-default',
+            ) }
+            key={ antiPatternName }
+          >
+            <div
+              className={ cn(
+                'gap-[0.24rem] flex mx-2 align-middle items-center justify-start',
+              ) }
+            >
+              {
+                antiPatternName === 'Total' ? (
+                  <EqualIcon
+                    size={ 8 }
+                    strokeWidth={ 1 }
+                    fill="currentColor"
+                    className="flex-shrink-0 text-light"
+                  />
+                ) : (
+                  <DiamondIcon
+                    size={ 8 }
+                    strokeWidth={ 1 }
+                    fill="currentColor"
+                    className="flex-shrink-0 text-light"
+                  />
+                )
+              }
+            </div>
+            <div className="flex w-full justify-between">
+                <span className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[85px]">
+                  { antiPatternName }
+                </span>
+              <span className="px-2 inline-flex justify-end font-mono text-lighter text-[0.4rem]">
+                  { `${ value }\%` }
+                </span>
+            </div>
+          </div>
+        )) }
+
         {
           data?.tooltip?.label && (
             <NodeToolbar
@@ -82,10 +143,6 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
               // position={ isHorizontal ? Position.Left : Position.Top }
             />
           )) }
-        </div>
-        <div className="label">
-          <div>{ nodeId }</div>
-          <div>{ data?.tooltip?.label }</div>
         </div>
         <div
           className={ cn(`handles handles-${ direction } sources`,

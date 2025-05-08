@@ -1,5 +1,5 @@
 import { lastOf } from "@/utils/base";
-import { Data, Reactflow, ReactflowNodeWithData, Workflow } from "./types";
+import { Data, Reactflow, ReactflowNodeData, ReactflowNodeWithData, Workflow } from "./types";
 import { getGroupNodes } from "@/data-convert/get-group-nodes.ts";
 import { ReactflowLayoutConfig } from "@/layout/node";
 import { getActiveAntiPatternToggleNames } from "@/data-convert/get-active-anti-pattern-toggle-names.ts";
@@ -139,35 +139,36 @@ export const workflow2reactflow = ( { workflow, config }: {
       node,
       activeAntiPatterns
     })).reduce(( acc, node ) => {
-      const stats = activeAntiPatternToggleNames.reduce(( acc, cur ) => {
+      const stats: ReactflowNodeData['stats'] = activeAntiPatternToggleNames.reduce(( acc, cur ) => {
         if ( analysis[cur] && node.id in analysis[cur] ) {
-          return { ...acc, [cur]: analysis[cur][node.id] }
+          return [ ...acc, { antiPatternName: cur, value: analysis[cur][node.id] * 100 } ]
         }
         return acc
-      }, {})
+      }, [])
 
 
       const nodeMetricArr = Object.values(stats)
-      let nodeMetricPercent = (nodeMetricArr.reduce(( a, b ) => a + b, 0) / nodeMetricArr.length);
+      let nodeMetricPercent = (nodeMetricArr.reduce(( a, b ) => +a.value + +b.value, 0) / nodeMetricArr.length);
 
       nodeMetricPercent = (Math.round(nodeMetricPercent * 100) / 100).toFixed(2);
 
-      let label = Object.entries(stats).reduce(( acc, curVal ) => {
-        if ( curVal[1] ) {
-          return acc += `${ curVal[0] }: ${ Number(curVal[1]) * 100 }%`
-        }
-        return acc
-      }, '')
+      // let label = Object.entries(stats).reduce(( acc, curVal ) => {
+      //   if ( curVal[1] ) {
+      //     return acc += `${ curVal[0] }: ${ Number(curVal[1]) * 100 }%`
+      //   }
+      //   return acc
+      // }, '')
+
 
       if ( nodeMetricArr.length > 1 ) {
-        label += `total ${ nodeMetricPercent * 100 }%`
+        stats.push({ antiPatternName: 'Total', value: nodeMetricPercent * 100 })
       }
 
       acc.push({
         ...node,
         data: {
           ...node,
-          tooltip: { label: label ? label : void 0 },
+          stats,
           nodeMetricPercent,
         },
         position: { x: 0, y: 0 },

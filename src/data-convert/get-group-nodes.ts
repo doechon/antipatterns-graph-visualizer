@@ -16,10 +16,8 @@ export const getGroupNodes = ( { activeToggles, parentIds }: {
     .sort(( x, y ) => y.length - x.length);
 
 
-  const greatNodeGroupName = allSubsetsOfNodeGroupNames[0];
-
   const groupNodes: ReactflowNodeWithData[] = allSubsetsOfNodeGroupNames.map(( nodeName, i ) => {
-    const base = {
+    return {
       id: nodeName,
       type: 'group',
       position: { x: 0, y: 0 },
@@ -29,26 +27,9 @@ export const getGroupNodes = ( { activeToggles, parentIds }: {
         position: { x: 0, y: 0 },
         sourceHandles: [],
         targetHandles: [],
-        width: 1000,
-        height: 1000
+        width: 400,
+        height: 400
       }
-    }
-    if ( nodeName === greatNodeGroupName ) {
-      // main biggest node
-      return base
-    } else {
-      return ({
-          ...base,
-          data: {
-            ...base.data,
-            position: { x: 0, y: 200 * i },
-            width: 400,
-            height: 400
-          },
-          parentId: greatNodeGroupName,
-          extent: 'parent',
-        }
-      )
     }
   })
 

@@ -62,6 +62,10 @@ export type ReactflowNodeData = WorkflowNode & {
     label: string;
     position?: NodeToolbarProps["position"];
   };
+  stats: Array<{
+    antiPatternName: string;
+    value: number
+  }>
   /**
    * Bottleneck percent
    */

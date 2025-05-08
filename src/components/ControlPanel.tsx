@@ -1,5 +1,5 @@
 import { button, Leva, useControls } from "leva";
-import defaultWorkflow from "../../data-short.json";
+import defaultWorkflow from "../../data.json";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "../layout/node";
 import { jsonEncode } from "@/utils/base";
 import { convertData2Workflow } from "@/data-convert";
@@ -68,7 +68,7 @@ export const ControlPanel = ( props: { layoutReactflow: any, toggleNames?: strin
   const toggleControls = useMemo(() => toggleNames?.reduce(( prev, cur, ind ) => ({
       ...prev,
       [cur]: {
-        order: 5 + ind,
+        order: ind,
         label: cur,
         value: false
       }
@@ -77,30 +77,9 @@ export const ControlPanel = ( props: { layoutReactflow: any, toggleNames?: strin
 
   const [ state, setState ] = useControls(() => {
     return {
-      algorithm: {
-        order: 1,
-        label: "Algorithms",
-        options: algorithms,
-      },
-      direction: {
-        order: 2,
-        label: "Direction",
-        options: directions,
-      },
-      spacing: {
-        order: 3,
-        label: "Spacing",
-        value: kDefaultLayoutConfig.spacing as any,
-        joystick: false,
-      },
-      reverseSourceHandles: {
-        order: 4,
-        label: "Order",
-        options: reverseSourceHandles,
-      },
       ...toggleControls,
       layout: {
-        order: 4 + Object.keys(toggleControls).length + 1,
+        order: Object.keys(toggleControls).length + 1,
         label: "Layout",
         ...button(( get ) => {
           layoutReactflow({
@@ -119,5 +98,5 @@ export const ControlPanel = ( props: { layoutReactflow: any, toggleNames?: strin
   kReactflowLayoutConfig.state = state as any;
   kReactflowLayoutConfig.setState = setState;
 
-  return <Leva hideCopyButton titleBar={ { filter: false } }/>;
+  return <Leva hideCopyButton titleBar={ { title: "AntiPatterns" } }/>;
 };
