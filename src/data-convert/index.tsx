@@ -71,10 +71,6 @@ export const convertData2Workflow = ( data: Data ): Workflow => {
       nodeHandles[target].targetHandles[targetHandle] += 1;
     }
   }
-  console.log('nodeHandles', nodeHandles)
-  console.log('edgesCount', edgesCount)
-  console.log('edgesIndex', edgesIndex)
-
   return {
     nodes: data["dependencyGraph"]['nodes'].map(node => {
       return ({
@@ -114,7 +110,6 @@ export const workflow2reactflow = ( { workflow, config }: {
   config: ReactflowLayoutConfig
 } ): Reactflow => {
   const { nodes = [], edges = [], analysis } = workflow ?? {};
-  console.log('nodes', nodes)
   let activeAntiPatternToggleNames = getActiveAntiPatternToggleNames(config.toggles)
 
   const nodeMetrics = Object.entries(analysis).reduce(( acc, [ antipatternName, data ] ) => {

@@ -47,6 +47,9 @@ dependencies:
   react-dom:
     specifier: ^18.2.0
     version: 18.3.1(react@18.3.1)
+  reactflow-auto-layout:
+    specifier: C:\Users\Doechon\WebstormProjects\reactflow-auto-layout\public\reactflow-auto-layout-2.0.0.tar.gz
+    version: file:public/reactflow-auto-layout-2.0.0.tar.gz(@types/react-dom@18.3.5)(@types/react@18.3.18)
   tailwind-merge:
     specifier: ^3.0.2
     version: 3.0.2
@@ -3011,4 +3014,25 @@ packages:
       '@types/react': 18.3.18
       react: 18.3.1
       use-sync-external-store: 1.4.0(react@18.3.1)
+    dev: false
+
+  file:public/reactflow-auto-layout-2.0.0.tar.gz(@types/react-dom@18.3.5)(@types/react@18.3.18):
+    resolution: {integrity: sha512-hrttqTQn1XMvSY5dDjmdHMWtWsZSoIKMivbDlPFrGu1y248asCeu8HKH92ZgEhSoaZBCuSZFhEXCGFH+Pev9PQ==, tarball: file:public/reactflow-auto-layout-2.0.0.tar.gz}
+    id: file:public/reactflow-auto-layout-2.0.0.tar.gz
+    name: reactflow-auto-layout
+    version: 2.0.0
+    dependencies:
+      '@dagrejs/dagre': 1.1.4
+      '@xyflow/react': 12.4.4(@types/react@18.3.18)(react-dom@18.3.1)(react@18.3.1)
+      d3-dag: 1.1.0
+      d3-hierarchy: 3.1.2
+      elkjs: 0.9.3
+      leva: 0.9.35(@types/react-dom@18.3.5)(@types/react@18.3.18)(react-dom@18.3.1)(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      xsta: 2.1.0(@types/react@18.3.18)(react@18.3.1)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+      - immer
     dev: false

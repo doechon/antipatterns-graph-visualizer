@@ -68,7 +68,9 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
           )
         }
         <div
-          className={ `handles handles-${ direction } targets` }
+          className={ cn(`handles handles-${ direction } targets`,
+            nodeId === "Pet" && "handles-targets-reverse"
+          ) }
         >
           { data?.targetHandles.map(( id ) => (
             <Handle
@@ -86,7 +88,9 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
           <div>{ data?.tooltip?.label }</div>
         </div>
         <div
-          className={ `handles handles-${ direction } sources` }
+          className={ cn(`handles handles-${ direction } sources`,
+            nodeId === "Pet" && "handles-sources-reverse"
+          ) }
         >
           { data?.sourceHandles.map(( id ) => (
             <Handle

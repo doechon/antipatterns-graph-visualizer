@@ -63,7 +63,22 @@
     top: 0px;
 }
 
+.handles-sources-reverse {
+    bottom: -2px;
+    left: 0px;
+    top: auto;
+    left: auto;
+}
+
 .handles-vertical.targets {
+    top: -4px;
+    left: 0px;
+}
+
+
+.handles-targets-reverse {
+    bottom: auto;
+    left: auto;
     top: -4px;
     left: 0px;
 }
