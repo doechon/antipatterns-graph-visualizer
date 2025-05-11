@@ -21,12 +21,15 @@ export const getEdgesAndNodeHandles = ( edgeHighlightAntipaterns: {
   const analysisEdges: AnalysisEdge[] = [];
 
   // Iterate through each anti-pattern category (Cycles, Service chains)
+
   Object.values(edgeHighlightAntipaterns).forEach(category => {
     // Iterate through each item in the category (Cycle 1, Chain--1948439031, etc.)
     Object.values(category).forEach(itemEdges => {
       analysisEdges.push(...itemEdges);
     });
   });
+
+  console.log(analysisEdges)
 
   for ( const edge of analysisEdges ) {
     const [ source, target, type ] = edge

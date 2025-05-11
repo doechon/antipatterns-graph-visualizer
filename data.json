@@ -38,26 +38,24 @@
     "Service chains": {
       "Chain--1948439031": [
         [
-          [
-            "org.springframework.samples.petclinic.customers.model.Pet",
-            "org.springframework.samples.petclinic.customers.model.Owner",
-            "field"
-          ],
-          [
-            "org.springframework.samples.petclinic.customers.model.Owner",
-            "org.springframework.samples.petclinic.customers.model.Pet",
-            "method_parameter"
-          ],
-          [
-            "org.springframework.samples.petclinic.customers.model.Pet",
-            "org.springframework.samples.petclinic.customers.model.Owner",
-            "method_return"
-          ],
-          [
-            "org.springframework.samples.petclinic.customers.model.Owner",
-            "org.springframework.samples.petclinic.customers.model.Collection\u003c*\u003e",
-            "field"
-          ]
+          "org.springframework.samples.petclinic.customers.model.Pet",
+          "org.springframework.samples.petclinic.customers.model.Owner",
+          "field"
+        ],
+        [
+          "org.springframework.samples.petclinic.customers.model.Owner",
+          "org.springframework.samples.petclinic.customers.model.Pet",
+          "method_parameter"
+        ],
+        [
+          "org.springframework.samples.petclinic.customers.model.Pet",
+          "org.springframework.samples.petclinic.customers.model.Owner",
+          "method_return"
+        ],
+        [
+          "org.springframework.samples.petclinic.customers.model.Owner",
+          "org.springframework.samples.petclinic.customers.model.Collection\u003c*\u003e",
+          "field"
         ]
       ]
     },
