@@ -5,7 +5,7 @@ export const getParentIdOfNode = ( { node, activeAntiPatterns }: {
   activeAntiPatterns: any
 } ) => {
   const parentId = Object.keys(activeAntiPatterns).sort().reduce(( acc, antipatternName ) => {
-    if ( node.id in activeAntiPatterns[antipatternName] || (Array.isArray(activeAntiPatterns[antipatternName]) && activeAntiPatterns[antipatternName].includes(node.id)) ) {
+    if ( node.id in activeAntiPatterns[antipatternName] || Object.values(activeAntiPatterns[antipatternName]).flat().flat().includes(node.id) ) {
       if ( acc ) {
         return acc += ` x ${ antipatternName }`
       }

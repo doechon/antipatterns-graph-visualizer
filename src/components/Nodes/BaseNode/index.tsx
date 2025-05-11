@@ -24,8 +24,9 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
 
     const handleBlur = () => setTooltipVisible(false);
 
-    const hslVal = 0.6 * data?.nodeMetricPercent
-    const hsl = `hsl(0, ${ hslVal * 100 }%, ${ (1 - hslVal) * 100 }%)`
+    const hslVal = data?.nodeMetricPercent * 0.6
+    const hsl = `hsl(0, ${ hslVal }%, ${ (1 - hslVal / 100) * 100 }%)`
+
 
     return (
       <div
@@ -133,7 +134,7 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
             nodeId === "Pet" && "handles-targets-reverse"
           ) }
         >
-          { data?.targetHandles.map(( id ) => (
+          { data?.targetHandles?.map(( id ) => (
             <Handle
               className={ `handle handle-${ direction }` }
               key={ id }
@@ -149,7 +150,7 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
             nodeId === "Pet" && "handles-sources-reverse"
           ) }
         >
-          { data?.sourceHandles.map(( id ) => (
+          { data?.sourceHandles?.map(( id ) => (
             <Handle
               className={ `handle handle-${ direction }` }
               key={ id }

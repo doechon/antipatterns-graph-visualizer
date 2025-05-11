@@ -23,7 +23,8 @@ import defaultWorkflow from "../data.json";
 import { convertData2Workflow, workflow2reactflow } from "./data-convert";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "./layout/node";
 import { useAutoLayout } from "./layout/useAutoLayout";
-import { Summary, SummaryProps } from "@/components/Legend";
+import { Summary, SummaryProps } from "@/components/Summary";
+
 
 const EditWorkFlow = () => {
   const [ nodes, setNodes, onNodesChange ] = useNodesState([]);

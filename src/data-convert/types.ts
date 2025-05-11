@@ -1,22 +1,18 @@
 import { Edge, Node, NodeToolbarProps, XYPosition } from "@xyflow/react";
 
 import { ControlPoint } from "../layout/edge/point.ts";
-import { SummaryProps } from "@/components/Legend";
+import { SummaryProps } from "../components/Summary";
 
+export type AnalysisEdge = [ a: string, b: string, c: string ]
 
 export interface Analysis {
-  [key: string]: { [key: string]: string[] } | { [key: string]: number };
+  [key: string]: { [key: string]: AnalysisEdge[] } | { [key: string]: number };
 }
 
 export interface Data {
   architectureAnalysis: Analysis,
   dependencyGraph: {
     nodes: { id: string, type: string }[];
-    edges: {
-      source: string;
-      type: string;
-      target: string;
-    }[]
   }
 }
 
