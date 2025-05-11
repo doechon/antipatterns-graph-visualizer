@@ -40,8 +40,6 @@ export const workflow2reactflow = ( { workflow, config }: {
     return acc
   }, {})
 
-  console.log('edgeHighlight', edgeHighlight)
-
   const notFoundAntiPatterns = Object.entries(analysis).reduce(( acc, [ antipatternName, data ] ) => {
     if ( typeof data === 'object' && isEmpty(data) ) {
       return { ...acc, [antipatternName]: data }
