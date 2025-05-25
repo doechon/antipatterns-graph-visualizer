@@ -1,4 +1,4 @@
-import { ComponentType, memo } from "react";
+import { ComponentType, memo, useState } from "react";
 import { BaseEdge as _BaseEdge, EdgeProps } from "@xyflow/react";
 
 import { ReactflowEdgeWithData } from "@/data-convert/types.ts";
@@ -74,13 +74,15 @@ export const BaseEdge: ComponentType<EdgeProps<ReactflowEdgeWithData>> = memo(
 
     const { path, points, labelPosition } = edge.data!.layout;
 
+    const [ labelText, setLabelText ] = useState<string | null>()
+
     return (
       <>
         <_BaseEdge
           path={ path }
           labelX={ labelPosition.x }
           labelY={ labelPosition.y }
-          label={ label }
+          label={ labelText }
           labelStyle={ labelStyle }
           labelShowBg={ labelShowBg }
           labelBgStyle={ labelBgStyle }
@@ -95,6 +97,14 @@ export const BaseEdge: ComponentType<EdgeProps<ReactflowEdgeWithData>> = memo(
           } }
           markerEnd={ `url('${ color }')` }
           markerStart={ markerStart }
+          onMouseEnter={ () => {
+            console.log('mouseEnter', id)
+            setLabelText(label)
+          } }
+          onMouseLeave={ () => {
+            console.log('mouseLeave', id)
+            setLabelText("")
+          } }
           interactionWidth={ interactionWidth }
         />
         { selected && (

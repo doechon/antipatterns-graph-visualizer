@@ -5,7 +5,6 @@ import {
   Background,
   BackgroundVariant,
   Controls,
-  MiniMap,
   ReactFlow,
   ReactFlowProvider,
   useEdgesState,
@@ -23,14 +22,13 @@ import defaultWorkflow from "../data.json";
 import { convertData2Workflow, workflow2reactflow } from "./data-convert";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "./layout/node";
 import { useAutoLayout } from "./layout/useAutoLayout";
-import { Summary, SummaryProps } from "@/components/Summary";
+import { Reactflow } from "@/data-convert/types.ts";
 
 
 const EditWorkFlow = () => {
   const [ nodes, setNodes, onNodesChange ] = useNodesState([]);
   const [ edges, _setEdges, onEdgesChange ] = useEdgesState([]);
-  const [ toggleNames, setToggleNames ] = useNodesState([]);
-  const [ summary, setSummary ] = useState<SummaryProps | undefined>();
+  const [ antiPatternToggles, setAntiPatternToggles ] = useState<Reactflow['antiPatternToggles'] | undefined>();
 
 
   const { layout, layouting } = useAutoLayout();
@@ -52,6 +50,7 @@ const EditWorkFlow = () => {
     }
 
     const reactflow = workflow2reactflow({ workflow: data, config });
+
     await layout({ ...reactflow, ...props });
   };
 
@@ -59,18 +58,16 @@ const EditWorkFlow = () => {
     const {
       nodes,
       edges,
-      toggleNames,
-      summary
+      antiPatternToggles
     } = workflow2reactflow({
       workflow: convertData2Workflow(defaultWorkflow as any),
       config: kDefaultLayoutConfig
     });
-    setToggleNames(toggleNames)
-    setSummary(summary)
-    layout({ nodes, edges, ...kDefaultLayoutConfig, toggleNames });
+    setAntiPatternToggles(() => antiPatternToggles)
+    layout({ nodes, edges, ...kDefaultLayoutConfig, antiPatternToggles });
   }, []);
 
-  if ( toggleNames.length === 0 ) {
+  if ( !antiPatternToggles || antiPatternToggles?.length === 0 ) {
     return null;
   }
 
@@ -84,7 +81,6 @@ const EditWorkFlow = () => {
         alignItems: "center",
       } }
     >
-      <Summary { ...summary }/>
       <ColorfulMarkerDefinitions/>
       <ReactFlow
         nodes={ nodes }
@@ -97,14 +93,14 @@ const EditWorkFlow = () => {
         <Background id="0" color="#ccc" variant={ BackgroundVariant.Dots }/>
         <ReactflowInstance/>
         <Controls/>
-        <MiniMap
-          pannable
-          zoomable
-          maskColor="transparent"
-          maskStrokeColor="black"
-          maskStrokeWidth={ 10 }
-        />
-        <ControlPanel layoutReactflow={ layoutReactflow } toggleNames={ toggleNames }/>)
+        {/*<MiniMap*/ }
+        {/*  pannable*/ }
+        {/*  zoomable*/ }
+        {/*  maskColor="transparent"*/ }
+        {/*  maskStrokeColor="black"*/ }
+        {/*  maskStrokeWidth={ 10 }*/ }
+        {/*/>*/ }
+        <ControlPanel layoutReactflow={ layoutReactflow } antiPatternToggles={ antiPatternToggles }/>)
       </ReactFlow>
     </div>
   );

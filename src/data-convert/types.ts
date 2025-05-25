@@ -1,7 +1,7 @@
 import { Edge, Node, NodeToolbarProps, XYPosition } from "@xyflow/react";
 
 import { ControlPoint } from "../layout/edge/point.ts";
-import { SummaryProps } from "../components/Summary";
+import { AntiPatternType } from "@/data-convert/index.tsx";
 
 export type AnalysisEdge = [ a: string, b: string, c: string ]
 
@@ -127,6 +127,5 @@ export type ReactflowEdgeWithData = ReactflowEdge<ReactflowEdgeData>;
 export interface Reactflow {
   nodes: ReactflowNodeWithData[];
   edges: ReactflowEdgeWithData[];
-  toggleNames: string[]
-  summary: SummaryProps
+  antiPatternToggles: { name: string, type: AntiPatternType }[]
 }

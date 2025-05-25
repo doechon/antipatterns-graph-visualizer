@@ -10,7 +10,7 @@ export const getRootNode = ( nodes: Reactflow["nodes"] ) => {
 
 export const getNodeSize = (
   node: ReactflowNodeWithData,
-  defaultSize = { width: 150, height: 36 }
+  defaultSize = { width: 150, height: 78 }
 ) => {
   const internalNode = kReactflow.store
     ?.getState()

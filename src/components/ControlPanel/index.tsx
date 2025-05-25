@@ -1,9 +1,11 @@
 import { button, Leva, useControls } from "leva";
-import defaultWorkflow from "../../data.json";
-import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "../layout/node";
+import defaultWorkflow from "../../../data.json";
+import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "../../layout/node";
 import { jsonEncode } from "@/utils/base";
-import { convertData2Workflow } from "@/data-convert";
+import { AntiPatternType, convertData2Workflow } from "@/data-convert";
 import { useMemo } from "react";
+import { Reactflow } from "@/data-convert/types.ts";
+import { whiteTheme } from "./style.ts";
 
 export const kReactflowLayoutConfig: {
   setState: any;
@@ -62,24 +64,34 @@ const reverseSourceHandles = Object.entries({
 );
 
 
-export const ControlPanel = ( props: { layoutReactflow: any, toggleNames?: string[] } ) => {
-  const { layoutReactflow, toggleNames } = props;
+export const ControlPanel = ( props: {
+  layoutReactflow: any,
+  antiPatternToggles?: Reactflow['antiPatternToggles']
+} ) => {
+  const { layoutReactflow, antiPatternToggles } = props;
 
-  const toggleControls = useMemo(() => toggleNames?.reduce(( prev, cur, ind ) => ({
+
+  const toggleControls = useMemo(() => antiPatternToggles?.reduce(( prev, { name, type }, ind ) => ({
       ...prev,
-      [cur]: {
-        order: ind,
-        label: cur,
-        value: false
+      [name]: {
+        order: ind + 1,
+        label: name,
+        value: false,
+        disabled: type === AntiPatternType.NOT_FOUND
       }
-    }), {}), [ toggleNames ]
+    }), {}), [ antiPatternToggles ]
   )
 
   const [ state, setState ] = useControls(() => {
     return {
       ...toggleControls,
+      algorithm: {
+        order: 0,
+        label: "Algorithms",
+        options: algorithms,
+      },
       layout: {
-        order: Object.keys(toggleControls).length + 1,
+        order: Object.keys(toggleControls).length + 2,
         label: "Layout",
         ...button(( get ) => {
           layoutReactflow({
@@ -98,5 +110,5 @@ export const ControlPanel = ( props: { layoutReactflow: any, toggleNames?: strin
   kReactflowLayoutConfig.state = state as any;
   kReactflowLayoutConfig.setState = setState;
 
-  return <Leva hideCopyButton titleBar={ { title: "AntiPatterns" } }/>;
+  return <Leva theme={ whiteTheme } hideCopyButton titleBar={ { title: "AntiPatterns" } }/>;
 };

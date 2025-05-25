@@ -56,7 +56,7 @@ export const kDefaultLayoutConfig: ReactflowLayoutConfig = {
   algorithm: "ds-dag(s)",
   direction: "vertical",
   visibility: "visible",
-  spacing: { x: 120, y: 120 },
+  spacing: { x: 100, y: 50 },
   reverseSourceHandles: false,
   toggles: {}
 };
@@ -83,7 +83,7 @@ export const layoutReactflow = async (
       ...config,
       nodes,
       edges,
-      algorithm: "origin",
+      algorithm: "ds-dag(s)",
     });
   }
   return result!;

@@ -1,15 +1,15 @@
 import "./styles.css";
 
-import { ComponentType, memo, useState } from "react";
-import { Handle, NodeProps, NodeResizeControl, NodeToolbar, Position } from "@xyflow/react";
+import React, { ComponentType, memo, useState } from "react";
+import { Handle, NodeProps, Position } from "@xyflow/react";
 
 import { ReactflowNodeData } from "@/data-convert/types.ts";
 import { cn } from "@/lib/utils.ts";
 import { getShortNodeName } from "@/data-convert/get-short-node-name.ts";
-import { DiamondIcon, EqualIcon, Table2 } from "lucide-react";
+import { Crosshair, EqualIcon, Table2 } from "lucide-react";
 
-export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?: string }> = memo(
-  ( { className, data }: NodeProps<ReactflowNodeData> & { className?: string } ) => {
+export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?: string, type?: string }> = memo(
+  ( { className, type, data }: NodeProps<ReactflowNodeData> & { className?: string } ) => {
     const { direction, reverseSourceHandles } = { direction: "vertical", reverseSourceHandles: false };
     const isHorizontal = direction === "horizontal";
     const targetHandlesFlexDirection: any = isHorizontal ? "column" : "row";
@@ -24,9 +24,8 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
 
     const handleBlur = () => setTooltipVisible(false);
 
-    const hslVal = data?.nodeMetricPercent * 0.6
+    const hslVal = data?.nodeMetricPercent * 0.5
     const hsl = `hsl(0, ${ hslVal }%, ${ (1 - hslVal / 100) * 100 }%)`
-
 
     return (
       <div
@@ -39,7 +38,8 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         className={ cn(
           "border-[0.5px] overflow-hidden rounded-[4px] shadow-sm",
           "relative rounded-md border bg-card p-5 text-card-foreground",
-          "hover:ring-1",
+          "hover:ring-1 bg-alternative",
+          hslVal > 30 && "text-[#CCCCCC]",
           className
         ) }
         onMouseEnter={ () => {
@@ -59,7 +59,7 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         >
           <header
             className={ cn(
-              'text-[0.55rem] pl-2 pr-1 bg-alternative text-default flex items-center justify-between',
+              'text-[1rem] pl-2 pr-1 bg-alternative text-default flex items-center justify-between',
             ) }
           >
             <div className="flex gap-x-1 items-center">
@@ -69,9 +69,6 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
           </header>
         </div>
 
-        <NodeResizeControl minWidth={ 100 } minHeight={ 50 }>
-          <ResizeIcon/>
-        </NodeResizeControl>
         { data?.stats?.map(( { antiPatternName, value } ) => (
           <div
             className={ cn(
@@ -85,7 +82,7 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
           >
             <div
               className={ cn(
-                'gap-[0.24rem] flex mx-2 align-middle items-center justify-start',
+                'gap-[1rem] flex mx-2 align-middle items-center justify-start',
               ) }
             >
               {
@@ -97,8 +94,8 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
                     className="flex-shrink-0 text-light"
                   />
                 ) : (
-                  <DiamondIcon
-                    size={ 8 }
+                  <Crosshair
+                    size={ 12 }
                     strokeWidth={ 1 }
                     fill="currentColor"
                     className="flex-shrink-0 text-light"
@@ -106,29 +103,16 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
                 )
               }
             </div>
-            <div className="flex w-full justify-between">
-                <span className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[85px]">
+            <div className="flex w-full justify-between font-mono">
+                <span className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[85px] text-[0.8rem]">
                   { antiPatternName }
                 </span>
-              <span className="px-2 inline-flex justify-end font-mono text-lighter text-[0.4rem]">
+              <span className="px-2 inline-flex justify-end text-lighter text-[0.8rem]">
                   { `${ value }\%` }
                 </span>
             </div>
           </div>
         )) }
-
-        {
-          data?.tooltip?.label && (
-            <NodeToolbar
-              isVisible={ isTooltipVisible }
-              className="rounded-sm bg-primary p-2 text-primary-foreground"
-              position={ Position.Top }
-              tabIndex={ 1 }
-            >
-              { data?.tooltip?.label }
-            </NodeToolbar>
-          )
-        }
         <div
           className={ cn(`handles handles-${ direction } targets`,
             nodeId === "Pet" && "handles-targets-reverse"
@@ -165,29 +149,6 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
     );
   }
 );
-
-function ResizeIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="#ff0071"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={ { position: 'absolute', right: 5, bottom: 5 } }
-    >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <polyline points="16 20 20 20 20 16"/>
-      <line x1="14" y1="14" x2="20" y2="20"/>
-      <polyline points="8 4 4 4 4 8"/>
-      <line x1="4" y1="4" x2="10" y2="10"/>
-    </svg>
-  );
-}
 
 
 BaseNode.displayName = "BaseNode";
