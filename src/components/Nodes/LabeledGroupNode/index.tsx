@@ -1,5 +1,4 @@
 import React, { forwardRef, HTMLAttributes, memo, ReactNode } from "react";
-
 import { NodeProps, Panel, PanelPosition } from "@xyflow/react";
 import { BaseNode } from "../BaseNode";
 import { cn } from "@/lib/utils";
@@ -11,80 +10,100 @@ export type GroupNodeLabelProps = HTMLAttributes<HTMLDivElement>;
 export const GroupNodeLabel = forwardRef<HTMLDivElement, GroupNodeLabelProps>(
   ( { children, className, ...props }, ref ) => {
     return (
-      <div ref={ ref } className={ cn("h-full w-full") } { ...props }>
+      <div ref={ ref } className={ cn("h-full w-full", className) } { ...props }>
         <div
           className={ cn(
-            "w-fit bg-gray-200 bg-secondary p-2 text-xs text-card-foreground",
-            className,
+            "px-3 py-1.5 text-sm font-semibold text-gray-700",
+            "shadow-sm ring-1 ring-gray-200/80",
+            "transition-colors duration-200",
+            "group-hover:ring-gray-300",
+            className
           ) }
         >
           { children }
         </div>
       </div>
     );
-  },
+  }
 );
 
 GroupNodeLabel.displayName = "GroupNodeLabel";
+
+/* GROUP NODE -------------------------------------------------------------- */
 
 export type GroupNodeProps = Partial<NodeProps> & {
   label?: ReactNode;
   position?: PanelPosition;
 };
 
-/* GROUP NODE -------------------------------------------------------------- */
-
 export const GroupNode = forwardRef<HTMLDivElement, GroupNodeProps>(
   ( { selected, label, position, data, ...props }, ref ) => {
-    const getLabelClassName = ( position?: PanelPosition ) => {
+    const getLabelPosition = ( position?: PanelPosition ) => {
       switch ( position ) {
         case "top-left":
-          return "rounded-br-sm";
+          return "justify-start items-start";
         case "top-center":
-          return "rounded-b-sm";
+          return "justify-center items-start";
         case "top-right":
-          return "rounded-bl-sm";
+          return "justify-end items-start";
         case "bottom-left":
-          return "rounded-tr-sm";
+          return "justify-start items-end";
         case "bottom-right":
-          return "rounded-tl-sm";
+          return "justify-end items-end";
         case "bottom-center":
-          return "rounded-t-sm";
+          return "justify-center items-end";
         default:
-          return "rounded-br-sm";
+          return "justify-start items-start";
       }
     };
-
 
     return (
       <BaseNode
         ref={ ref }
         selected={ selected }
-        className={ cn("h-full overflow-hidden rounded-sm bg-white bg-opacity-50 p-0",
+        className={ cn(
+          "h-full overflow-hidden rounded-lg bg-white/40",
+          "transition-all duration-200 ease-in-out",
+          "hover:ring-gray-300 hover:shadow-xl",
+          selected && "ring-2 ring-blue-500/80 shadow-xl",
+          "p-0"
         ) }
         data={ data }
         { ...props }
       >
-
-        {/*<NodeResizeControl minWidth={ 100 } minHeight={ 50 }>*/ }
-        {/*  <ResizeIcon/>*/ }
-        {/*</NodeResizeControl>*/ }
-        <Panel className={ cn("m-0 p-0") } position={ position }>
+        <Panel
+          className={ cn(
+            "w-full h-full p-2",
+            getLabelPosition(position)
+          ) }
+          position={ position }
+        >
           { label && (
-            <GroupNodeLabel className={ getLabelClassName(position) }>
+            <GroupNodeLabel>
               { label }
             </GroupNodeLabel>
           ) }
         </Panel>
       </BaseNode>
     );
-  },
+  }
 );
 
 GroupNode.displayName = "GroupNode";
 
+/* DEMO COMPONENT ---------------------------------------------------------- */
 
 export const LabeledGroupNodeDemo = memo(( { selected, ...props }: NodeProps ) => {
-  return <GroupNode selected={ selected } { ...props } label="Label"/>;
+  return (
+    <GroupNode
+      selected={ selected }
+      { ...props }
+      label={
+        <div className="flex items-center gap-2">
+          <span className="text-blue-500">●</span>
+          <span>Group Node</span>
+        </div>
+      }
+    />
+  );
 });
-

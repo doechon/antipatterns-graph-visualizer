@@ -9,7 +9,7 @@ import { getShortNodeName } from "@/data-convert/get-short-node-name.ts";
 import { Crosshair, EqualIcon, Table2 } from "lucide-react";
 
 export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?: string, type?: string }> = memo(
-  ( { className, type, data }: NodeProps<ReactflowNodeData> & { className?: string } ) => {
+  ( { className, type, data, selected }: NodeProps<ReactflowNodeData> & { className?: string } ) => {
     const { direction, reverseSourceHandles } = { direction: "vertical", reverseSourceHandles: false };
     const isHorizontal = direction === "horizontal";
     const targetHandlesFlexDirection: any = isHorizontal ? "column" : "row";
@@ -36,9 +36,9 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
           }
         } }
         className={ cn(
-          "border-[0.5px] overflow-hidden rounded-[4px] shadow-sm",
-          "relative rounded-md border bg-card p-5 text-card-foreground",
-          "hover:ring-1 bg-alternative",
+          "min-w-[180px] overflow-hidden rounded-lg border border-border bg-background/80 shadow-md",
+          "hover:ring-2 hover:ring-primary hover:shadow-lg",
+          selected && "ring-2 ring-primary shadow-lg",
           hslVal > 30 && "text-[#CCCCCC]",
           className
         ) }
@@ -54,65 +54,41 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
         onBlur={ handleBlur }
         style={ data?.nodeMetricPercent !== void 0 ? { background: `${ hsl }` } : {} }
       >
-        <div
-          className="border-[0.5px] overflow-hidden rounded-[4px] shadow-sm"
-        >
-          <header
-            className={ cn(
-              'text-[1rem] pl-2 pr-1 bg-alternative text-default flex items-center justify-between',
-            ) }
-          >
-            <div className="flex gap-x-1 items-center">
-              <Table2 strokeWidth={ 1 } size={ 12 } className="text-light"/>
-              { nodeId }
-            </div>
+        <div className="border-b border-border bg-muted/30 p-2">
+          <header className="flex items-center gap-2 text-sm font-medium">
+            <Table2 size={ 14 }/>
+            <span className="truncate">{ nodeId }</span>
+            <div className="ml-auto h-2 w-2 rounded-full bg-green-400/80 shadow-inner"/>
           </header>
         </div>
 
-        { data?.stats?.map(( { antiPatternName, value } ) => (
-          <div
-            className={ cn(
-              'text-[8px] leading-5 relative flex flex-row justify-items-start',
-              'bg-surface-100',
-              'border-t',
-              'border-t-[0.5px]',
-              'hover:bg-scale-500 transition cursor-default',
-            ) }
-            key={ antiPatternName }
-          >
+        {/* Stats Section */ }
+        <div className="divide-y divide-border/50">
+          { data?.stats?.map(( { antiPatternName, value } ) => (
             <div
+              key={ antiPatternName }
               className={ cn(
-                'gap-[1rem] flex mx-2 align-middle items-center justify-start',
+                "flex items-center gap-3 px-3 py-2 text-sm",
+                antiPatternName === 'Total' ? "font-semibold" : "font-medium"
               ) }
             >
-              {
-                antiPatternName === 'Total' ? (
-                  <EqualIcon
-                    size={ 8 }
-                    strokeWidth={ 1 }
-                    fill="currentColor"
-                    className="flex-shrink-0 text-light"
-                  />
+              <div>
+                { antiPatternName === 'Total' ? (
+                  <EqualIcon size={ 12 } strokeWidth={ 2 }/>
                 ) : (
-                  <Crosshair
-                    size={ 12 }
-                    strokeWidth={ 1 }
-                    fill="currentColor"
-                    className="flex-shrink-0 text-light"
-                  />
-                )
-              }
-            </div>
-            <div className="flex w-full justify-between font-mono">
-                <span className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[85px] text-[0.8rem]">
-                  { antiPatternName }
+                  <Crosshair size={ 12 } strokeWidth={ 1.5 }/>
+                ) }
+              </div>
+              <div className="flex w-full items-center justify-between">
+                <span className="truncate">{ antiPatternName }</span>
+                <span className="font-mono text-xs">
+                  { value }%
                 </span>
-              <span className="px-2 inline-flex justify-end text-lighter text-[0.8rem]">
-                  { `${ value }\%` }
-                </span>
+              </div>
             </div>
-          </div>
-        )) }
+          )) }
+        </div>
+
         <div
           className={ cn(`handles handles-${ direction } targets`,
             nodeId === "Pet" && "handles-targets-reverse"

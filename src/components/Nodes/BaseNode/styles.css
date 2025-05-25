@@ -12,7 +12,7 @@
 }
 
 .handle {
-    background: #224466;
+    background: inherit;
     width: 8px;
     height: 8px;
 }
