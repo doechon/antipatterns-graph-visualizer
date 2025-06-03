@@ -1,12 +1,11 @@
 import { Edge, Node, NodeToolbarProps, XYPosition } from "@xyflow/react";
 
 import { ControlPoint } from "../layout/edge/point.ts";
-import { AntiPatternType } from "@/data-convert/index.tsx";
 
 export type AnalysisEdge = [ a: string, b: string, c: string ]
 
 export interface Analysis {
-  [key: string]: { [key: string]: AnalysisEdge[] } | { [key: string]: number };
+  [key: string]: { metric: { [key: string]: number }, topological: { [key: string]: AnalysisEdge[] } }
 }
 
 export interface Data {
@@ -127,5 +126,5 @@ export type ReactflowEdgeWithData = ReactflowEdge<ReactflowEdgeData>;
 export interface Reactflow {
   nodes: ReactflowNodeWithData[];
   edges: ReactflowEdgeWithData[];
-  antiPatternToggles: { name: string, type: AntiPatternType }[]
+  antiPatternToggles: { name: string, disabled?: boolean }[]
 }

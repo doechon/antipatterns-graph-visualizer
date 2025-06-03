@@ -2,7 +2,7 @@ import { button, Leva, useControls } from "leva";
 import defaultWorkflow from "../../../data.json";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "../../layout/node";
 import { jsonEncode } from "@/utils/base";
-import { AntiPatternType, convertData2Workflow } from "@/data-convert";
+import { convertData2Workflow } from "@/data-convert";
 import { useMemo } from "react";
 import { Reactflow } from "@/data-convert/types.ts";
 import { whiteTheme } from "./style.ts";
@@ -71,13 +71,13 @@ export const ControlPanel = ( props: {
   const { layoutReactflow, antiPatternToggles } = props;
 
 
-  const toggleControls = useMemo(() => antiPatternToggles?.reduce(( prev, { name, type }, ind ) => ({
+  const toggleControls = useMemo(() => antiPatternToggles?.reduce(( prev, { name, disabled }, ind ) => ({
       ...prev,
       [name]: {
         order: ind + 1,
         label: name,
         value: false,
-        disabled: type === AntiPatternType.NOT_FOUND
+        disabled
       }
     }), {}), [ antiPatternToggles ]
   )

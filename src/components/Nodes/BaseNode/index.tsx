@@ -9,12 +9,10 @@ import { getShortNodeName } from "@/data-convert/get-short-node-name.ts";
 import { Crosshair, EqualIcon, Table2 } from "lucide-react";
 
 export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?: string, type?: string }> = memo(
-  ( { className, type, data, selected }: NodeProps<ReactflowNodeData> & { className?: string } ) => {
+  ( { className, data, selected }: NodeProps<ReactflowNodeData> & { className?: string } ) => {
     const { direction, reverseSourceHandles } = { direction: "vertical", reverseSourceHandles: false };
     const isHorizontal = direction === "horizontal";
     const targetHandlesFlexDirection: any = isHorizontal ? "column" : "row";
-    const sourceHandlesFlexDirection: any =
-      targetHandlesFlexDirection + (reverseSourceHandles ? "-reverse" : "");
 
     const [ nodeId, setNodeId ] = useState(getShortNodeName(data.id))
 
@@ -79,7 +77,7 @@ export const BaseNode: ComponentType<NodeProps<ReactflowNodeData> & { className?
                   <Crosshair size={ 12 } strokeWidth={ 1.5 }/>
                 ) }
               </div>
-              <div className="flex w-full items-center justify-between">
+              <div className="flex w-full items-center justify-between gap-1 items-end">
                 <span className="truncate">{ antiPatternName }</span>
                 <span className="font-mono text-xs">
                   { value }%

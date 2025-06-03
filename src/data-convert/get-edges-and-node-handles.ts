@@ -1,6 +1,5 @@
 import { lastOf } from "@/utils/base.ts";
-import { AnalysisEdge, Workflow } from "@/data-convert/types.ts";
-import { AntiPatterns } from "@/data-convert/index.tsx";
+import { Analysis, AnalysisEdge, Workflow } from "@/data-convert/types.ts";
 
 export interface getEdgesReturn {
   edges: Workflow["edges"]
@@ -13,17 +12,18 @@ export interface getEdgesReturn {
   >
 }
 
-export const getEdgesAndNodeHandles = ( edgeHighlightAntipaterns: AntiPatterns ): getEdgesReturn => {
+export const getEdgesAndNodeHandles = ( edgeHighlightAntipaterns: Analysis ): getEdgesReturn => {
   const baseEdgesCount: Record<string, number> = {};
   const preparedEdges: Workflow['edges'] = []
+
 
   const analysisEdges: AnalysisEdge[] = [];
 
   // Iterate through each anti-pattern category (Cycles, Service chains)
 
-  Object.values(edgeHighlightAntipaterns).forEach(( { data } ) => {
+  Object.values(edgeHighlightAntipaterns).forEach(( { topological } ) => {
     // Iterate through each item in the category (Cycle 1, Chain--1948439031, etc.)
-    Object.values(data).forEach(itemEdges => {
+    Object.values(topological ?? {}).forEach(itemEdges => {
       analysisEdges.push(...itemEdges);
     });
   });

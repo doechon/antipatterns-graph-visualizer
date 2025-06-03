@@ -1,4 +1,4 @@
-import { AnalysisEdge, Data, Reactflow, ReactflowNodeData, ReactflowNodeWithData, Workflow } from "./types";
+import { Data, Reactflow, ReactflowNodeData, ReactflowNodeWithData, Workflow } from "./types";
 import { getGroupNodes } from "@/data-convert/get-group-nodes.ts";
 import { ReactflowLayoutConfig } from "@/layout/node";
 import { getActiveAntiPatternToggleNames } from "@/data-convert/get-active-anti-pattern-toggle-names.ts";
@@ -18,38 +18,12 @@ export const convertData2Workflow = ( data: Data ): Workflow => {
   }
 }
 
-export enum AntiPatternType {
-  NOT_FOUND = "not_found",
-  NODE_METRIC = "node_metric",
-  EDGE_HIGHLIGHT = "edge_highlight"
-}
-
-export type AntiPatterns = Record<string, {
-  type: AntiPatternType.EDGE_HIGHLIGHT,
-  data: { [key: string]: AnalysisEdge[] }
-} | {
-  type: AntiPatternType.NODE_METRIC,
-  data: { [key: string]: number }
-} | {
-  type: AntiPatternType.NOT_FOUND,
-}>
-
 export const workflow2reactflow = ( { workflow, config }: {
   workflow: Workflow,
   config: ReactflowLayoutConfig
 } ): Reactflow => {
-  const { nodes: workflowNodes = [], analysis } = workflow ?? {};
+  const { nodes: workflowNodes = [], analysis: antiPatterns } = workflow ?? {};
   let activeAntiPatternToggleNames = getActiveAntiPatternToggleNames(config.toggles)
-
-  const antiPatterns: AntiPatterns = Object.entries(analysis).reduce(( acc, [ antipatternName, data ] ) => {
-    let type = 'not_found'
-    if ( typeof data === 'object' && typeof Object.values(data)[0] === 'number' ) {
-      type = 'node_metric'
-    } else if ( typeof data === 'object' && Array.isArray(Object.values(data)[0]) ) {
-      type = 'edge_highlight'
-    }
-    return { ...acc, [antipatternName]: { type, data: data } }
-  }, {})
 
   const activeAntiPatterns = Object.fromEntries(Object.entries(antiPatterns).filter((( [ antiPatternName ] ) => activeAntiPatternToggleNames.includes(antiPatternName))))
 
@@ -62,24 +36,23 @@ export const workflow2reactflow = ( { workflow, config }: {
   const {
     edges,
     nodeHandles
-  } = getEdgesAndNodeHandles(
-    Object.fromEntries(Object.entries(antiPatterns).filter((( [ antiPatternName, { type } ] ) => activeAntiPatternToggleNames.includes(antiPatternName) && type === 'edge_highlight'))))
+  } = getEdgesAndNodeHandles(antiPatterns)
 
   const nodes = groupNodes.concat(workflowNodes.filter(node => getParentIdOfNode({
     node,
     activeAntiPatterns
   })).reduce(( acc, node, ind ) => {
     const stats: ReactflowNodeData['stats'] = activeAntiPatternToggleNames.reduce(( acc, cur ) => {
-      if ( analysis[cur] && node.id in analysis[cur] ) {
-        return [ ...acc, { antiPatternName: cur, value: analysis[cur][node.id] * 100 } ]
+      const data = activeAntiPatterns[cur]["metric"]
+      if ( data && node.id in data ) {
+        return [ ...acc, { antiPatternName: cur, value: data[node.id] * 100 } ]
       }
       return acc
     }, [])
 
 
     const nodeMetricArr = Object.values(stats).map(i => i.value)
-    let nodeMetricPercent = (nodeMetricArr.reduce(( a, b ) => a + b, 0) / nodeMetricArr.length);
-
+    let nodeMetricPercent = (nodeMetricArr.reduce(( a, b ) => +a + +b, 0) / nodeMetricArr.length);
     nodeMetricPercent = (Math.round(nodeMetricPercent * 100) / 100).toFixed(2);
 
     // let label = Object.entries(stats).reduce(( acc, curVal ) => {
@@ -91,7 +64,7 @@ export const workflow2reactflow = ( { workflow, config }: {
 
 
     if ( nodeMetricArr.length > 1 ) {
-      stats.push({ antiPatternName: 'Total', value: nodeMetricPercent * 100 })
+      stats.push({ antiPatternName: 'Total', value: nodeMetricPercent })
     }
 
 
@@ -118,6 +91,9 @@ export const workflow2reactflow = ( { workflow, config }: {
   return {
     nodes,
     edges,
-    antiPatternToggles: Object.entries(antiPatterns).map(( [ name, { type } ] ) => ({ name, type }))
+    antiPatternToggles: Object.entries(antiPatterns).map(( [ name, { topological, metric } ] ) => ({
+      name,
+      disabled: topological === undefined || metric === undefined
+    }))
   };
 };
