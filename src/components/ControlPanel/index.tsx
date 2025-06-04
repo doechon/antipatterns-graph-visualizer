@@ -1,8 +1,5 @@
 import { button, Leva, useControls } from "leva";
-import defaultWorkflow from "../../../data.json";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "../../layout/node";
-import { jsonEncode } from "@/utils/base";
-import { convertData2Workflow } from "@/data-convert";
 import { useMemo } from "react";
 import { Reactflow } from "@/data-convert/types.ts";
 import { whiteTheme } from "./style.ts";
@@ -11,8 +8,6 @@ export const kReactflowLayoutConfig: {
   setState: any;
   state: ReactflowLayoutConfig;
 } = {} as any;
-
-export const workflowInputHint = jsonEncode(convertData2Workflow(defaultWorkflow as any))!;
 
 const algorithms = [
   "elk-mr-tree",
@@ -31,58 +26,28 @@ const algorithms = [
   } as any
 );
 
-const directions = Object.entries({
-  vertical: "vertical",
-  horizontal: "horizontal",
-}).reduce(
-  ( pre, [ key, value ] ) => {
-    pre[key] = value;
-    return pre;
-  },
-  {
-    [kDefaultLayoutConfig.direction]: kDefaultLayoutConfig.direction,
-  } as any
-);
-
-const reverseSourceHandlesKeyMap: Record<string, string> = {
-  false: "asc",
-  true: "desc",
-};
-const reverseSourceHandles = Object.entries({
-  asc: false,
-  desc: true,
-}).reduce(
-  ( pre, [ key, value ] ) => {
-    pre[key] = value;
-    return pre;
-  },
-  {
-    [reverseSourceHandlesKeyMap[
-      kDefaultLayoutConfig.reverseSourceHandles.toString()
-      ]]: kDefaultLayoutConfig.reverseSourceHandles,
-  } as any
-);
-
-
 export const ControlPanel = ( props: {
-  layoutReactflow: any,
-  antiPatternToggles?: Reactflow['antiPatternToggles']
+  layoutReactflow: any;
+  antiPatternToggles?: Reactflow["antiPatternToggles"];
 } ) => {
   const { layoutReactflow, antiPatternToggles } = props;
 
-
-  const toggleControls = useMemo(() => antiPatternToggles?.reduce(( prev, { name, disabled }, ind ) => ({
-      ...prev,
-      [name]: {
-        order: ind + 1,
-        label: name,
-        value: false,
-        disabled
-      }
-    }), {}), [ antiPatternToggles ]
-  )
+  const toggleControls = useMemo(
+    () =>
+      antiPatternToggles?.reduce(( prev, { name, disabled }, ind ) => {
+        prev[name] = {
+          order: ind + 1,
+          label: name,
+          value: false,
+          disabled,
+        };
+        return prev;
+      }, {} as Record<string, any>),
+    [ antiPatternToggles ]
+  );
 
   const [ state, setState ] = useControls(() => {
+
     return {
       ...toggleControls,
       algorithm: {
@@ -91,16 +56,17 @@ export const ControlPanel = ( props: {
         options: algorithms,
       },
       layout: {
-        order: Object.keys(toggleControls).length + 2,
+        order: Object.keys(toggleControls || {}).length + 2,
         label: "Layout",
         ...button(( get ) => {
           layoutReactflow({
-            workflow: workflowInputHint,
             algorithm: get("algorithm"),
             direction: get("direction"),
             spacing: get("spacing"),
             reverseSourceHandles: false,
-            toggles: Object.keys(toggleControls).map(toggleName => ({ [toggleName]: get(toggleName) })),
+            toggles: Object.keys(toggleControls || {}).map(( toggleName ) => ({
+              [toggleName]: get(toggleName),
+            })),
           });
         }),
       },
@@ -110,5 +76,11 @@ export const ControlPanel = ( props: {
   kReactflowLayoutConfig.state = state as any;
   kReactflowLayoutConfig.setState = setState;
 
-  return <Leva theme={ whiteTheme } hideCopyButton titleBar={ { title: "AntiPatterns" } }/>;
+  return (
+    <Leva
+      theme={ whiteTheme }
+      hideCopyButton
+      titleBar={ { title: "AntiPatterns" } }
+    />
+  );
 };

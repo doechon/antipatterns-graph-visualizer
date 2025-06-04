@@ -18,56 +18,65 @@ import { kEdgeTypes } from "./components/Edges";
 import { ColorfulMarkerDefinitions } from "./components/Edges/Marker";
 import { kNodeTypes } from "./components/Nodes";
 import { ReactflowInstance } from "./components/ReactflowInstance";
-import defaultWorkflow from "../data.json";
+
 import { convertData2Workflow, workflow2reactflow } from "./data-convert";
 import { kDefaultLayoutConfig, ReactflowLayoutConfig } from "./layout/node";
 import { useAutoLayout } from "./layout/useAutoLayout";
 import { Reactflow } from "@/data-convert/types.ts";
 
-
 const EditWorkFlow = () => {
   const [ nodes, setNodes, onNodesChange ] = useNodesState([]);
   const [ edges, _setEdges, onEdgesChange ] = useEdgesState([]);
   const [ antiPatternToggles, setAntiPatternToggles ] = useState<Reactflow['antiPatternToggles'] | undefined>();
+  const [ workflowState, setWorkflow ] = useState();
 
 
   const { layout, layouting } = useAutoLayout();
 
   const layoutReactflow = async (
-    props:
-      ReactflowLayoutConfig & {
-      workflow: string;
-    }
+    props: ReactflowLayoutConfig & { workflow?: string }
   ) => {
-    if ( layouting ) {
-      return;
-    }
+    if ( layouting ) return;
+
     const { workflow, ...config } = props;
-    const data = jsonDecode(workflow);
+    const data = jsonDecode(workflow) ?? workflowState;
     if ( !data ) {
       alert("Invalid workflow JSON data");
       return;
     }
 
     const reactflow = workflow2reactflow({ workflow: data, config });
-
     await layout({ ...reactflow, ...props });
   };
 
   useEffect(() => {
-    const {
-      nodes,
-      edges,
-      antiPatternToggles
-    } = workflow2reactflow({
-      workflow: convertData2Workflow(defaultWorkflow as any),
-      config: kDefaultLayoutConfig
-    });
-    setAntiPatternToggles(() => antiPatternToggles)
-    layout({ nodes, edges, ...kDefaultLayoutConfig, antiPatternToggles });
+    const loadWorkflow = async () => {
+      const jsonPath = "data.json";
+      try {
+        const res = await fetch(jsonPath);
+        const raw = await res.json();
+        const workflow = convertData2Workflow(raw);
+        const {
+          nodes,
+          edges,
+          antiPatternToggles
+        } = workflow2reactflow({
+          workflow,
+          config: kDefaultLayoutConfig
+        });
+        setWorkflow(() => workflow)
+        setAntiPatternToggles(() => antiPatternToggles);
+        layout({ nodes, edges, ...kDefaultLayoutConfig, antiPatternToggles });
+      } catch ( err ) {
+        console.error("Ошибка загрузки JSON-файла:", err);
+        alert("Ошибка загрузки JSON. Проверь путь и наличие файла.");
+      }
+    };
+
+    loadWorkflow();
   }, []);
 
-  if ( !antiPatternToggles || antiPatternToggles?.length === 0 ) {
+  if ( !antiPatternToggles || antiPatternToggles.length === 0 ) {
     return null;
   }
 
@@ -93,14 +102,7 @@ const EditWorkFlow = () => {
         <Background id="0" color="#ccc" variant={ BackgroundVariant.Dots }/>
         <ReactflowInstance/>
         <Controls/>
-        {/*<MiniMap*/ }
-        {/*  pannable*/ }
-        {/*  zoomable*/ }
-        {/*  maskColor="transparent"*/ }
-        {/*  maskStrokeColor="black"*/ }
-        {/*  maskStrokeWidth={ 10 }*/ }
-        {/*/>*/ }
-        <ControlPanel layoutReactflow={ layoutReactflow } antiPatternToggles={ antiPatternToggles }/>)
+        <ControlPanel layoutReactflow={ layoutReactflow } antiPatternToggles={ antiPatternToggles }/>
       </ReactFlow>
     </div>
   );
