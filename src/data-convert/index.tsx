@@ -52,20 +52,7 @@ export const workflow2reactflow = ( { workflow, config }: {
 
 
     const nodeMetricArr = Object.values(stats).map(i => i.value)
-    let nodeMetricPercent = (nodeMetricArr.reduce(( a, b ) => +a + +b, 0) / nodeMetricArr.length);
-    nodeMetricPercent = (Math.round(nodeMetricPercent * 100) / 100).toFixed(2);
-
-    // let label = Object.entries(stats).reduce(( acc, curVal ) => {
-    //   if ( curVal[1] ) {
-    //     return acc += `${ curVal[0] }: ${ Number(curVal[1]) * 100 }%`
-    //   }
-    //   return acc
-    // }, '')
-
-
-    if ( nodeMetricArr.length > 1 ) {
-      stats.push({ antiPatternName: 'Total', value: nodeMetricPercent })
-    }
+    const nodeMetricPercent = Math.max(...nodeMetricArr);
 
 
     acc.push({
